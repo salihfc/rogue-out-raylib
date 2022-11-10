@@ -22,7 +22,7 @@ void InitGame(Game* game)
 static
 void DrawGame(Game* game, float delta)
 {
-    const char* p_text = IntToConstChar(game->frame);
+    const char* p_text = IntToConstChar(game->frame / 60);
     DrawText(p_text, 10, 50, 32, RED);
     MemFree((void *)p_text);
 

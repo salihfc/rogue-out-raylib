@@ -4,14 +4,17 @@
 #ifndef _PLAYER
 #define _PLAYER
 
-static const Vector2 DEFAULT_POS = (Vector2) {568.0, 700.0};
+static const Vector2 DEFAULT_POS = (Vector2) {568.0, 900.0};
 static const Vector2 DEFAULT_SIZE = (Vector2) {200.0, 40.0};
-static const float DEFAULT_SPEED = 100.0;
+static const float DEFAULT_SPEED = 300.0;
+static const float DEFAULT_DAMP = 0.9;
 
 typedef 
 struct Player
 {
     Vector2 position;
+    Vector2 velocity;
+
     Texture2D texture;
 
 } Player;
@@ -28,28 +31,42 @@ static
 void ResetPlayerPosition(Player* player)
 {
     player->position = DEFAULT_POS;
+    player->velocity = (Vector2) {0, 0};
 }
 
 
 static
-void MovePlayer(Player* player, Vector2 movement)
+void ApplyForceToPlayer(Player* player, Vector2 force)
 {
-    player->position.x += movement.x * DEFAULT_SPEED;
-    player->position.y += movement.y * DEFAULT_SPEED;
-} 
+    player->velocity = VectorSum(player->velocity, force);
+}
+
+
+static
+void MovePlayer(Player* player, float delta)
+{
+    // Horizontal movement
+    player->position.x += player->velocity.x * DEFAULT_SPEED;
+    player->position.x = Clamp(player->position.x, 0, 1356 - DEFAULT_SIZE.x);
+
+    // Vertical movement
+    player->position.y += player->velocity.y * DEFAULT_SPEED;
+    player->position.y = Clamp(player->position.y, 0, 900 - DEFAULT_SIZE.y);
+
+    // Damping
+    player->velocity.x *= DEFAULT_DAMP;
+    player->velocity.y *= DEFAULT_DAMP;
+}
 
 
 static 
 void DrawPlayer(Player* player)
 {
-    if (player->texture.id)
-    {
-        DrawTextureEx(player->texture, player->position, 0.0, 1.0, WHITE);
-    }
-    else
-    {
-        DrawRectangleV(player->position, DEFAULT_SIZE, GREEN);
-    }
+    DrawRectangleV(player->position, DEFAULT_SIZE, GREEN);
+ 
+    // Debug
+    DrawText(IntToConstChar((int)(player->position.x)), 10, 80, 30, DARKGREEN);
+    DrawText(IntToConstChar((int)(player->position.y)), 10, 80 + 30, 30, DARKGREEN);
 }
 
 

@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "raylib.h"
 #include "game.c"
+#include "input.c"
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
@@ -35,26 +36,14 @@ static const int screenWidth = 1356;
 static const int screenHeight = 900;
 
 // Required variables to manage screen transitions (fade-in, fade-out)
-static float transAlpha = 0.0f;
-static bool onTransition = false;
-static bool transFadeOut = false;
-static int transFromScreen = -1;
-
 //----------------------------------------------------------------------------------
 // Local Functions Declaration
 //----------------------------------------------------------------------------------
-static void ChangeToScreen();     // Change to screen, no transition effect
-
-static void TransitionToScreen(); // Request transition to next screen
-static void UpdateTransition(void);         // Update transition effect
-static void DrawTransition(void);           // Draw transition effect (full-screen rectangle)
-
 static void Input(Game*, float);          // Update and draw one frame
 static void Update(Game*, float);          // Update and draw one frame
 static void Draw(Game*, float);          // Update and draw one frame
 
 // helpers
-static const char* IntToConstChar(int);
 
 //----------------------------------------------------------------------------------
 // Main entry point
@@ -116,43 +105,22 @@ int main(void)
 //----------------------------------------------------------------------------------
 // Module specific Functions Definition
 //----------------------------------------------------------------------------------
-// Change to next screen, no transition
-static void ChangeToScreen()
-{
-
-}
-
-// Request transition to next screen
-static void TransitionToScreen()
-{
-
-}
-
-// Update transition effect (fade-in, fade-out)
-static void UpdateTransition(void)
-{
-
-}
-
-// Draw transition effect (full-screen rectangle)
-static void DrawTransition(void)
-{
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, transAlpha));
-}
-
 static Vector2 GetInputDirection()
 {
     Vector2 dir;
-    dir.x = IsKeyDown(KEY_RIGHT) - IsKeyDown(KEY_LEFT);
+    dir.x = IsMoveRightDown() - IsMoveLeftDown();
     // dir.y = IsKeyDown(KEY_DOWN)  - IsKeyDown(KEY_UP); 
     return dir;
 }
 
 static void Input(Game* game, float delta)
 {
-    Vector2 move_dir = GetInputDirection();
-    move_dir.x *= delta;
-    MovePlayer(&(game->player), move_dir);
+    Player* player = &(game->player);
+    Vector2 force = GetInputDirection();
+    force.x *= delta;
+    // force.y *= delta;
+    ApplyForceToPlayer(player, force);
+    MovePlayer(player, delta);
 }
 
 
@@ -163,12 +131,7 @@ static void Update(Game* game, float delta)
     // Update
     //----------------------------------------------------------------------------------
     UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
-    if (!onTransition)
-    {
-    }
-    else UpdateTransition();    // Update transition (fade-in, fade-out)
     //----------------------------------------------------------------------------------
-
 }
 
 static void Draw(Game* game, float delta)
