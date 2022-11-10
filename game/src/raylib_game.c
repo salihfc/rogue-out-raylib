@@ -12,7 +12,9 @@
 *
 ********************************************************************************************/
 
+#include <stdio.h>
 #include "raylib.h"
+#include "game.c"
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
@@ -29,8 +31,8 @@ Sound fxCoin = { 0 };
 //----------------------------------------------------------------------------------
 // Local Variables Definition (local to this module)
 //----------------------------------------------------------------------------------
-static const int screenWidth = 800;
-static const int screenHeight = 450;
+static const int screenWidth = 1356;
+static const int screenHeight = 900;
 
 // Required variables to manage screen transitions (fade-in, fade-out)
 static float transAlpha = 0.0f;
@@ -41,13 +43,17 @@ static int transFromScreen = -1;
 //----------------------------------------------------------------------------------
 // Local Functions Declaration
 //----------------------------------------------------------------------------------
-static void ChangeToScreen(int screen);     // Change to screen, no transition effect
+static void ChangeToScreen();     // Change to screen, no transition effect
 
-static void TransitionToScreen(int screen); // Request transition to next screen
+static void TransitionToScreen(); // Request transition to next screen
 static void UpdateTransition(void);         // Update transition effect
 static void DrawTransition(void);           // Draw transition effect (full-screen rectangle)
 
-static void UpdateDrawFrame(void);          // Update and draw one frame
+static void Update(Game*, float);          // Update and draw one frame
+static void Draw(Game*, float);          // Update and draw one frame
+
+// helpers
+static const char* IntToConstChar(int);
 
 //----------------------------------------------------------------------------------
 // Main entry point
@@ -69,17 +75,22 @@ int main(void)
     PlayMusicStream(music);
 
     // Setup and init first screen
+    Game game;
+    InitGame(&game);
+
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
-    SetTargetFPS(60);       // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60);       // Set our game to run at 60 frames-per-second	
     //--------------------------------------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        UpdateDrawFrame();
+		float delta = GetFrameTime();
+		Update(&game, delta);
+        Draw(&game, delta);
     }
 #endif
 
@@ -127,32 +138,37 @@ static void DrawTransition(void)
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, transAlpha));
 }
 
-// Update and draw game frame
-static void UpdateDrawFrame(void)
+static void Update(Game* game, float delta)
 {
+	++game->frame;
+
     // Update
     //----------------------------------------------------------------------------------
     UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
-
     if (!onTransition)
     {
-
     }
     else UpdateTransition();    // Update transition (fade-in, fade-out)
     //----------------------------------------------------------------------------------
 
+}
+
+static void Draw(Game* game, float delta)
+{
     // Draw
     //----------------------------------------------------------------------------------
     BeginDrawing();
-	
+	{
         ClearBackground(RAYWHITE);
-
+		DrawGame(game, delta);
 
         // Draw full screen rectangle in front of everything
-        if (onTransition) DrawTransition();
+        // if (onTransition) DrawTransition();
 
-        //DrawFPS(10, 10);
+        DrawFPS(10, 10);
+    }
 
     EndDrawing();
     //----------------------------------------------------------------------------------
 }
+

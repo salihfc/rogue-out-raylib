@@ -1,3 +1,4 @@
 #!/bin/bash
-echo "running"
+echo "running" &&
+make &&
 ./_bin/Debug/test-ray
