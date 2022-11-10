@@ -49,6 +49,7 @@ static void TransitionToScreen(); // Request transition to next screen
 static void UpdateTransition(void);         // Update transition effect
 static void DrawTransition(void);           // Draw transition effect (full-screen rectangle)
 
+static void Input(Game*, float);          // Update and draw one frame
 static void Update(Game*, float);          // Update and draw one frame
 static void Draw(Game*, float);          // Update and draw one frame
 
@@ -89,6 +90,7 @@ int main(void)
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
 		float delta = GetFrameTime();
+        Input(&game, delta);
 		Update(&game, delta);
         Draw(&game, delta);
     }
@@ -137,6 +139,22 @@ static void DrawTransition(void)
 {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, transAlpha));
 }
+
+static Vector2 GetInputDirection()
+{
+    Vector2 dir;
+    dir.x = IsKeyDown(KEY_RIGHT) - IsKeyDown(KEY_LEFT);
+    // dir.y = IsKeyDown(KEY_DOWN)  - IsKeyDown(KEY_UP); 
+    return dir;
+}
+
+static void Input(Game* game, float delta)
+{
+    Vector2 move_dir = GetInputDirection();
+    move_dir.x *= delta;
+    MovePlayer(&(game->player), move_dir);
+}
+
 
 static void Update(Game* game, float delta)
 {

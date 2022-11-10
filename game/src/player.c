@@ -6,7 +6,7 @@
 
 static const Vector2 DEFAULT_POS = (Vector2) {568.0, 700.0};
 static const Vector2 DEFAULT_SIZE = (Vector2) {200.0, 40.0};
-
+static const float DEFAULT_SPEED = 100.0;
 
 typedef 
 struct Player
@@ -29,6 +29,14 @@ void ResetPlayerPosition(Player* player)
 {
     player->position = DEFAULT_POS;
 }
+
+
+static
+void MovePlayer(Player* player, Vector2 movement)
+{
+    player->position.x += movement.x * DEFAULT_SPEED;
+    player->position.y += movement.y * DEFAULT_SPEED;
+} 
 
 
 static 
