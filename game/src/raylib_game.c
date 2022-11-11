@@ -61,7 +61,7 @@ int main(void)
     music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
 
-    SetMusicVolume(music, 1.0f);
+    SetMusicVolume(music, 0.0f);
     PlayMusicStream(music);
 
     // Setup and init first screen
@@ -121,6 +121,13 @@ static void Input(Game* game, float delta)
     // force.y *= delta;
     ApplyForceToPlayer(player, force);
     MovePlayer(player, delta);
+
+    if (IsKeyPressed(KEY_E))
+    {
+        Vector2 mouse = GetMousePosition();
+        printf("%d %d\n", (int)mouse.x, (int)mouse.y);
+        printf("%s %s\n", IntToConstChar((int)mouse.x), IntToConstChar((int)mouse.y));
+    }
 }
 
 
@@ -140,7 +147,7 @@ static void Draw(Game* game, float delta)
     //----------------------------------------------------------------------------------
     BeginDrawing();
 	{
-        ClearBackground(RAYWHITE);
+        ClearBackground(DARKGRAY);
 		DrawGame(game, delta);
 
         // Draw full screen rectangle in front of everything

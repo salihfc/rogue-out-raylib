@@ -6,7 +6,7 @@ struct Game
 {
     int frame;
     Player player;
-
+    // Board board;
 
 } Game;
 
@@ -22,11 +22,12 @@ void InitGame(Game* game)
 static
 void DrawGame(Game* game, float delta)
 {
-    const char* p_text = IntToConstChar(game->frame / 60);
-    DrawText(p_text, 10, 50, 32, RED);
-    MemFree((void *)p_text);
-
+    DrawInt(game->frame / 60, (Vector2){10, 50}, 32, RED);
     Player* player = &(game->player);
-
     DrawPlayer(player);
+
+
+    Vector2 mouse = GetMousePosition();
+    DrawInt(mouse.x, (Vector2){10, 50 + 32 * 3}, 32, BLUE);
+    DrawInt(mouse.y, (Vector2){100, 50 + 32 * 3}, 32, BLUE);
 }
