@@ -2,11 +2,11 @@
 #include "brick.c"
 #include "utils.c"
 
-#define BOARD_ROW 6
-#define BOARD_COL 6
+#define BOARD_ROW 24
+#define BOARD_COL 24
 
-#define PAD_ROW 20
-#define PAD_COL 40
+#define PAD_ROW 10
+#define PAD_COL 10
 
 // static const int BOARD_ROW = 4;
 // static const int BOARD_COL = 4;
@@ -28,7 +28,7 @@ void InitBoard(Board* board, Vector2 board_top_left)
 		{
 			Brick* brick = &(board->bricks[row][col]);
 
-			brick->remainingHp = 1;
+			brick->remainingHp = 3;
 			brick->position = VectorSum(
 				board_top_left,
 				(Vector2) {

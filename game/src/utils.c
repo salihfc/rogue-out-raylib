@@ -57,14 +57,40 @@ const char* IntToConstChar(int number)
     return c;
 }
 
-static
-void DrawInt(int number, Vector2 position, int fontsize, Color color)
+static 
+const char* Vector2ToConstChar(Vector2 vec)
 {
-    const char* p_text = IntToConstChar(number);
-    DrawText(p_text, position.x, position.y, fontsize, color);
-    MemFree((void *)p_text);
-}
+    const char* x_str = IntToConstChar((int)vec.x);
+    const char* y_str = IntToConstChar((int)vec.y);
 
+    const char* c = MemAlloc(64 * sizeof(char));
+    char* it_c = (char*) c;
+
+    char* it = (char*) x_str;
+    while(*it != '\0')
+    {
+        *it_c = *it;
+
+        it_c++;
+        it++;
+    }
+
+    *it_c = ',';
+    *it_c++;
+
+    it = (char*) y_str;
+    while(*it != '\0')
+    {
+        *it_c = *it;
+
+        it_c++;
+        it++;
+    }
+
+    MemFree((char*)x_str);
+    MemFree((char*)y_str);
+    return c;
+}
 
 static
 float Clamp(float value, float mn, float mx)
@@ -78,33 +104,11 @@ float Clamp(float value, float mn, float mx)
     return value;
 }
 
-
-// -------------
-// VECTOR2 UTILS
-// -------------
-
-static inline
-Vector2 VectorSum(Vector2 a, Vector2 b)
+static
+bool InRange(float value, float start, float end)
 {
-    return (Vector2) {
-        a.x + b.x,
-        a.y + b.y
-    };
+    return (start <= value) && (value <= end);
 }
-
-static inline
-Vector2 VectorScaled(Vector2 v, float scale)
-{
-    return (Vector2) {
-        v.x * scale,
-        v.y * scale
-    };
-}
-
-
-// -------------
-// ~VECTOR2
-// -------------
 
 
 #endif

@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "2d_object.c"
 #include "utils.c"
+#include "geo_utils.c"
 
 #ifndef _PLAYER
 #define _PLAYER
@@ -15,6 +16,7 @@ struct Player
 {
     Object2D body;
     Texture2D texture;
+    Color tint;
 
 } Player;
 
@@ -53,8 +55,17 @@ void MovePlayer(Player* player, float delta)
 static 
 void DrawPlayer(Player* player)
 {
-    DrawRectangleV(player->body.position, player->body.size, GREEN);
+    DrawRectangleV(player->body.position, player->body.size, player->tint);
 }
 
+
+static
+Rectangle GetPlayerRect(Player* player)
+{
+    return (Rectangle) {
+        player->body.position.x, player->body.position.y,
+        player->body.size.x, player->body.size.y
+    };
+}
 
 #endif

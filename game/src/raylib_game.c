@@ -16,6 +16,7 @@
 #include "raylib.h"
 #include "game.c"
 #include "input.c"
+#include "draw_utils.c"
 
 #if defined(PLATFORM_WEB)
 	#include <emscripten/emscripten.h>
@@ -176,16 +177,12 @@ static void Draw(Game* game, Camera2D* camera, float delta)
     DrawInt(game->frame / 60, (Vector2){10, 50}, 32, RED);
 
     Vector2 mouse = GetMousePosition();
-    DrawInt(mouse.x, (Vector2){10, 50 + 32 * 3}, 32, BLUE);
-    DrawInt(mouse.y, (Vector2){100, 50 + 32 * 3}, 32, BLUE);
+	DrawVector2(mouse, (Vector2) {10, 140}, 32, BLUE);
 
     // Player Debug
 	Player* player = &game->player;
-    DrawText(IntToConstChar((int)(player->body.position.x)), 10, 80, 30, DARKGREEN);
-    DrawText(IntToConstChar((int)(player->body.position.y)), 10, 80 + 30, 30, DARKGREEN);
-
-    DrawText(IntToConstChar((int)(player->body.size.x)), 100, 80, 30, DARKGREEN);
-    DrawText(IntToConstChar((int)(player->body.size.y)), 100, 80 + 30, 30, DARKGREEN);
+	DrawVector2(player->body.position,	(Vector2) {10, 80}, 32, DARKGREEN);
+	DrawVector2(player->body.size, 		(Vector2) {10, 110}, 32, DARKGREEN);
 
 	EndDrawing();
 	//----------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "utils.c"
+#include "geo_utils.c"
 
 typedef
 struct Object2D

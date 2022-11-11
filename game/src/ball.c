@@ -25,7 +25,7 @@ void DrawBall(Ball* ball)
 {
     DrawCircleGradient(
         ball->position.x, ball->position.y,
-        ball->radius,
+        ball->radius + 0.0,
         BLACK, YELLOW
     );
 }
