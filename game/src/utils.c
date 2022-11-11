@@ -3,6 +3,7 @@
 #ifndef _UTILS
 #define _UTILS
 
+static const Rectangle SCREEN_BOUNDARY = (Rectangle) {.x = 0, .y = 0, .width = 1356, .height = 900};  
 
 static
 void ReverseRange(char* left, char* right)
@@ -82,7 +83,7 @@ float Clamp(float value, float mn, float mx)
 // VECTOR2 UTILS
 // -------------
 
-static
+static inline
 Vector2 VectorSum(Vector2 a, Vector2 b)
 {
     return (Vector2) {
@@ -91,7 +92,7 @@ Vector2 VectorSum(Vector2 a, Vector2 b)
     };
 }
 
-static
+static inline
 Vector2 VectorScaled(Vector2 v, float scale)
 {
     return (Vector2) {

@@ -120,7 +120,6 @@ static void Input(Game* game, float delta)
     force.x *= delta;
     // force.y *= delta;
     ApplyForceToPlayer(player, force);
-    MovePlayer(player, delta);
 
     if (IsKeyPressed(KEY_E))
     {
@@ -134,6 +133,7 @@ static void Input(Game* game, float delta)
 static void Update(Game* game, float delta)
 {
 	++game->frame;
+    UpdateGame(game, delta);
 
     // Update
     //----------------------------------------------------------------------------------

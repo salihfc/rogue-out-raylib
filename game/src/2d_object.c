@@ -12,8 +12,6 @@ struct Object2D
 
 } Object2D;
 
-static const Rectangle SCREEN_BOUNDARY = (Rectangle) {.x = 0, .y = 0, .width = 1356, .height = 900};  
-
 static
 void ApplyForceToObject(Object2D* object, Vector2 force)
 {
