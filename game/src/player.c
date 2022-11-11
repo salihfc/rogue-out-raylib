@@ -54,13 +54,6 @@ static
 void DrawPlayer(Player* player)
 {
     DrawRectangleV(player->body.position, player->body.size, GREEN);
- 
-    // Debug
-    DrawText(IntToConstChar((int)(player->body.position.x)), 10, 80, 30, DARKGREEN);
-    DrawText(IntToConstChar((int)(player->body.position.y)), 10, 80 + 30, 30, DARKGREEN);
-
-    DrawText(IntToConstChar((int)(player->body.size.x)), 100, 80, 30, DARKGREEN);
-    DrawText(IntToConstChar((int)(player->body.size.y)), 100, 80 + 30, 30, DARKGREEN);
 }
 
 

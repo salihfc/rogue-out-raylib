@@ -18,7 +18,7 @@
 #include "input.c"
 
 #if defined(PLATFORM_WEB)
-    #include <emscripten/emscripten.h>
+	#include <emscripten/emscripten.h>
 #endif
 
 //----------------------------------------------------------------------------------
@@ -39,9 +39,9 @@ static const int screenHeight = 900;
 //----------------------------------------------------------------------------------
 // Local Functions Declaration
 //----------------------------------------------------------------------------------
-static void Input(Game*, float);          // Update and draw one frame
-static void Update(Game*, float);          // Update and draw one frame
-static void Draw(Game*, float);          // Update and draw one frame
+static void Input(Game*, Camera2D*, float);          // Update and draw one frame
+static void Update(Game*, Camera2D*, float);          // Update and draw one frame
+static void Draw(Game*, Camera2D*, float);          // Update and draw one frame
 
 // helpers
 
@@ -50,56 +50,63 @@ static void Draw(Game*, float);          // Update and draw one frame
 //----------------------------------------------------------------------------------
 int main(void)
 {
-    // Initialization
-    //---------------------------------------------------------
-    InitWindow(screenWidth, screenHeight, "raylib game template");
+	// Initialization
+	//---------------------------------------------------------
+	InitWindow(screenWidth, screenHeight, "raylib game template");
 
-    InitAudioDevice();      // Initialize audio device
+	InitAudioDevice();      // Initialize audio device
 
-    // Load global data (assets that must be available in all screens, i.e. font)
-    font = LoadFont("resources/mecha.png");
-    music = LoadMusicStream("resources/ambient.ogg");
-    fxCoin = LoadSound("resources/coin.wav");
+	// Load global data (assets that must be available in all screens, i.e. font)
+	font = LoadFont("resources/mecha.png");
+	music = LoadMusicStream("resources/ambient.ogg");
+	fxCoin = LoadSound("resources/coin.wav");
 
-    SetMusicVolume(music, 0.0f);
-    PlayMusicStream(music);
+	SetMusicVolume(music, 0.0f);
+	PlayMusicStream(music);
 
-    // Setup and init first screen
-    Game game;
-    InitGame(&game);
+	// Setup camera
+    Camera2D camera = { 0 };
+    camera.target = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+    camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+
+	// Setup and init first screen
+	Game game;
+	InitGame(&game);
 
 
 #if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
+	emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
-    SetTargetFPS(60);       // Set our game to run at 60 frames-per-second	
-    //--------------------------------------------------------------------------------------
+	SetTargetFPS(60);       // Set our game to run at 60 frames-per-second	
+	//--------------------------------------------------------------------------------------
 
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
+	// Main game loop
+	while (!WindowShouldClose())    // Detect window close button or ESC key
+	{
 		float delta = GetFrameTime();
-        Input(&game, delta);
-		Update(&game, delta);
-        Draw(&game, delta);
-    }
+		Input(&game, &camera, delta);
+		Update(&game, &camera, delta);
+		Draw(&game, &camera, delta);
+	}
 #endif
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    // Unload current screen data before closing
+	// De-Initialization
+	//--------------------------------------------------------------------------------------
+	// Unload current screen data before closing
 
-    // Unload global data loaded
-    UnloadFont(font);
-    UnloadMusicStream(music);
-    UnloadSound(fxCoin);
+	// Unload global data loaded
+	UnloadFont(font);
+	UnloadMusicStream(music);
+	UnloadSound(fxCoin);
 
-    CloseAudioDevice();     // Close audio context
+	CloseAudioDevice();     // Close audio context
 
-    CloseWindow();          // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+	CloseWindow();          // Close window and OpenGL context
+	//--------------------------------------------------------------------------------------
 
-    return 0;
+	return 0;
 }
 
 //----------------------------------------------------------------------------------
@@ -107,56 +114,80 @@ int main(void)
 //----------------------------------------------------------------------------------
 static Vector2 GetInputDirection()
 {
-    Vector2 dir;
-    dir.x = IsMoveRightDown() - IsMoveLeftDown();
-    // dir.y = IsKeyDown(KEY_DOWN)  - IsKeyDown(KEY_UP); 
-    return dir;
+	Vector2 dir;
+	dir.x = IsMoveRightDown() - IsMoveLeftDown();
+	// dir.y = IsKeyDown(KEY_DOWN)  - IsKeyDown(KEY_UP); 
+	return dir;
 }
 
-static void Input(Game* game, float delta)
+static void Input(Game* game, Camera2D* camera, float delta)
 {
-    Player* player = &(game->player);
-    Vector2 force = GetInputDirection();
-    force.x *= delta;
-    // force.y *= delta;
-    ApplyForceToPlayer(player, force);
+	Player* player = &(game->player);
+	Vector2 force = GetInputDirection();
+	force.x *= delta;
+	force.y *= delta;
 
-    if (IsKeyPressed(KEY_E))
-    {
-        Vector2 mouse = GetMousePosition();
-        printf("%d %d\n", (int)mouse.x, (int)mouse.y);
-        printf("%s %s\n", IntToConstChar((int)mouse.x), IntToConstChar((int)mouse.y));
-    }
+	ApplyForceToPlayer(player, force);
+
+	// camera->target = VectorSum(camera->target, VectorScaled(force, 10.0));
+
+	if (IsKeyPressed(KEY_E))
+	{
+		Vector2 mouse = GetMousePosition();
+		printf("%d %d\n", (int)mouse.x, (int)mouse.y);
+		printf("%s %s\n", IntToConstChar((int)mouse.x), IntToConstChar((int)mouse.y));
+	}
 }
 
 
-static void Update(Game* game, float delta)
+static void Update(Game* game, Camera2D* camera, float delta)
 {
 	++game->frame;
-    UpdateGame(game, delta);
+	UpdateGame(game, delta);
 
-    // Update
-    //----------------------------------------------------------------------------------
-    UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
-    //----------------------------------------------------------------------------------
+	// Update
+	//----------------------------------------------------------------------------------
+	UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
+	//----------------------------------------------------------------------------------
 }
 
-static void Draw(Game* game, float delta)
+static void Draw(Game* game, Camera2D* camera, float delta)
 {
-    // Draw
-    //----------------------------------------------------------------------------------
-    BeginDrawing();
+	// Draw
+	//----------------------------------------------------------------------------------
+	BeginDrawing();
+	ClearBackground(DARKGRAY);
+	
+	BeginMode2D(*camera);
 	{
-        ClearBackground(DARKGRAY);
 		DrawGame(game, delta);
 
-        // Draw full screen rectangle in front of everything
-        // if (onTransition) DrawTransition();
+		DrawCircleV(
+			(Vector2) {0, 0},
+			// (Vector2) {screenWidth / 2, screenHeight / 2},
+			100.0,
+			BLACK
+		);
+	}
+	EndMode2D();
+	
+    // DRAW DEBUG
+	DrawFPS(10, 10);
+    DrawInt(game->frame / 60, (Vector2){10, 50}, 32, RED);
 
-        DrawFPS(10, 10);
-    }
+    Vector2 mouse = GetMousePosition();
+    DrawInt(mouse.x, (Vector2){10, 50 + 32 * 3}, 32, BLUE);
+    DrawInt(mouse.y, (Vector2){100, 50 + 32 * 3}, 32, BLUE);
 
-    EndDrawing();
-    //----------------------------------------------------------------------------------
+    // Player Debug
+	Player* player = &game->player;
+    DrawText(IntToConstChar((int)(player->body.position.x)), 10, 80, 30, DARKGREEN);
+    DrawText(IntToConstChar((int)(player->body.position.y)), 10, 80 + 30, 30, DARKGREEN);
+
+    DrawText(IntToConstChar((int)(player->body.size.x)), 100, 80, 30, DARKGREEN);
+    DrawText(IntToConstChar((int)(player->body.size.y)), 100, 80 + 30, 30, DARKGREEN);
+
+	EndDrawing();
+	//----------------------------------------------------------------------------------
 }
 

@@ -13,6 +13,13 @@ struct Game
 
 } Game;
 
+static
+void HandleCollisions(Game* game, float delta)
+{
+    // Ball 
+
+}
+
 
 static
 void InitGame(Game* game)
@@ -28,15 +35,15 @@ void UpdateGame(Game* game, float delta)
 {
     MovePlayer(&(game->player), delta);
     MoveBall(&(game->ball), delta);
+
+    HandleCollisions(game, delta);
 }
+
 
 
 static
 void DrawGame(Game* game, float delta)
 {
-    // DRAW FRAME
-    DrawInt(game->frame / 60, (Vector2){10, 50}, 32, RED);
-
     // DRAW PLAYER
     Player* player = &(game->player);
     DrawPlayer(player);
@@ -48,9 +55,4 @@ void DrawGame(Game* game, float delta)
     // DRAW BALL
     Ball* ball = &(game->ball);
     DrawBall(ball);
-
-    // DRAW DEBUG
-    Vector2 mouse = GetMousePosition();
-    DrawInt(mouse.x, (Vector2){10, 50 + 32 * 3}, 32, BLUE);
-    DrawInt(mouse.y, (Vector2){100, 50 + 32 * 3}, 32, BLUE);
 }
