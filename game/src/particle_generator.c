@@ -6,6 +6,7 @@
 
 static const float EXTEND_RATIO = 0.9f;
 static const int PARTICLE_GENERATOR_STARTING_CAPACITY = 128;
+static const int MAX_PARTICLE_GENERATOR_CAPACITY = 16 * 1024;
 
 typedef
 struct ParticleGenerator
@@ -123,6 +124,9 @@ void AddParticle(ParticleGenerator* particle_generator, Particle particle)
     int* current_active = _GetCurrentActiveBuffer(particle_generator);
     int free_idx = _GetFreeIdx(particle_generator);
 
+    if (free_idx == -1) // Skip generating particle
+        return;
+
     // Set alive
     particle.life = particle.lifetime;
 
@@ -131,7 +135,7 @@ void AddParticle(ParticleGenerator* particle_generator, Particle particle)
     *(current_active + particle_generator-> particle_count) = free_idx;
 
     particle_generator->free_count--;
-    particle_generator-> particle_count++;
+    particle_generator->particle_count++;
 
     TraceLog(LOG_INFO, "~~[AddParticle]");
 }
@@ -144,7 +148,7 @@ void AddParticleGroup(ParticleGenerator* particle_generator, Particle particle_d
     // Velocity only for now
     for (int idx = 0; idx < group_size; idx++)
     {
-        particle_defaults.velocity = GetRandomVector2(100.0);
+        particle_defaults.velocity = VectorScaled(GetRandomVector2(1.0), GetRandomValue(10, 200));
         AddParticle(particle_generator, particle_defaults);
     }
 }
@@ -163,7 +167,9 @@ void MarkParticleFree(ParticleGenerator* particle_generator, int idx)
 static
 int _GetFreeIdx(ParticleGenerator* particle_generator)
 {
-    assert(particle_generator->free_count > 0);
+    if (particle_generator->free_count <= 0)
+        return -1;
+
     return *(particle_generator->free_particles + particle_generator->free_count - 1);
 }
 
@@ -191,6 +197,8 @@ bool _ReallocRequired(ParticleGenerator* particle_generator, int addition)
 static
 void _IncreaseCapacity(ParticleGenerator* particle_generator)
 {
+    if (particle_generator->capacity >= MAX_PARTICLE_GENERATOR_CAPACITY) return;
+
     particle_generator->capacity *= 2;
     particle_generator->particles = MemRealloc(particle_generator->particles, particle_generator->capacity * sizeof(Particle));
     particle_generator->free_particles = MemRealloc(particle_generator->free_particles, particle_generator->capacity * sizeof(int));

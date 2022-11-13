@@ -1,5 +1,8 @@
+#include <assert.h>
+
 #include "raylib.h"
 #include "geo_utils.c"
+#include "easings.c"
 
 typedef
 enum ParticleType{
@@ -21,6 +24,7 @@ struct Particle
     float life;
 
     Color color;
+    float life_t;
 
 } Particle;
 
@@ -37,21 +41,27 @@ void MoveParticle(Particle* particle, float delta)
 {
     particle->life -= delta;
     particle->position = VectorSum(particle->position, VectorScaled(particle->velocity, delta));
+
+    assert(particle->lifetime);
+    particle->life_t = particle->life / particle->lifetime;
 }
 
 
 static
 void DrawParticle(Particle* particle)
 {
+    float t = ease2_smoothstep(particle->life_t);
+    Color final_color = Fade(particle->color, t);
+
     switch (particle->type)
     {
     case NONE:
         break;
     case CIRCLE:
-        DrawCircleV(particle->position, particle->size, particle->color);
+        DrawCircleV(particle->position, particle->size, final_color);
         break;
     case SQUARE:
-        DrawRectangleV(particle->position, (Vector2){particle->size, particle->size}, particle->color);
+        DrawRectangleV(particle->position, (Vector2){particle->size, particle->size}, final_color);
         break;
     
     default:
