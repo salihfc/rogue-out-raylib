@@ -70,11 +70,13 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 		{
 			AddParticleGroup(&game->particle_generator, 
 				(Particle) {
+					.type = SQUARE,
+
 					.position = ball->position,
 					.size = 3,
 					.color = BLUE,
 					.lifetime = 2.0,
-					.type = SQUARE
+					.damping = 0.7
 				},
 				10
 			);

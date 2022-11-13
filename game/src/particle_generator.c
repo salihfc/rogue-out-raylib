@@ -94,8 +94,7 @@ void TickParticleGenerator(ParticleGenerator* particle_generator, float delta)
 static
 void DrawParticleGenerator(ParticleGenerator* particle_generator)
 {
-    TraceLog(3, "DRAWING PARTICLES");
-    printf("p_count: %d\n", particle_generator->particle_count);
+    // TraceLog(3, "DRAWING PARTICLES");
 
     int* it = particle_generator->active_particles;
     for (int i = 0; i < particle_generator->particle_count; i++)
@@ -103,8 +102,6 @@ void DrawParticleGenerator(ParticleGenerator* particle_generator)
         Particle* particle = &particle_generator->particles[*it];
         DrawParticle(particle);
         it++;
-        // printf("drawn %d\n", i);
-        fflush(stdout);
     }
 }
 
@@ -113,12 +110,11 @@ void DrawParticleGenerator(ParticleGenerator* particle_generator)
 static
 void AddParticle(ParticleGenerator* particle_generator, Particle particle)
 {
-    // TraceLog(LOG_INFO, "[AddParticle]");
-    
     if (_ReallocRequired(particle_generator, 1))
     {
-        TraceLog(LOG_INFO, "[ParticleGenerator] Realloc Required");
         _IncreaseCapacity(particle_generator);
+        TraceLog(LOG_INFO, "[ParticleGenerator] Realloc Required");
+        printf("NEW CAP: [%d]", particle_generator->capacity);
     }
 
     int* current_active = _GetCurrentActiveBuffer(particle_generator);
@@ -137,7 +133,6 @@ void AddParticle(ParticleGenerator* particle_generator, Particle particle)
     particle_generator->free_count--;
     particle_generator->particle_count++;
 
-    TraceLog(LOG_INFO, "~~[AddParticle]");
 }
 
 

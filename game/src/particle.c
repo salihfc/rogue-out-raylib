@@ -9,6 +9,8 @@ enum ParticleType{
     NONE = -1,
     CIRCLE = 0,
     SQUARE = 1,
+
+    COUNT
 } ParticleType;
 
 typedef
@@ -20,11 +22,14 @@ struct Particle
     Vector2 velocity;
 
     float size;
+
     float lifetime;
     float life;
+    float life_t;
+
+    float damping;
 
     Color color;
-    float life_t;
 
 } Particle;
 
@@ -44,6 +49,9 @@ void MoveParticle(Particle* particle, float delta)
 
     assert(particle->lifetime);
     particle->life_t = particle->life / particle->lifetime;
+
+    float damp = 1.0 - (1.0 - particle->damping) * delta;
+    particle->velocity = VectorScaled(particle->velocity, damp);
 }
 
 
