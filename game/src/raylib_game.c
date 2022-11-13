@@ -65,6 +65,8 @@ int main(void)
 	SetMusicVolume(music, 0.0f);
 	PlayMusicStream(music);
 
+	SetTraceLogLevel(LOG_INFO);
+
 	// Setup camera
     Camera2D camera = { 0 };
     camera.target = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };

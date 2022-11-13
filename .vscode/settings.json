@@ -5,6 +5,7 @@
         "*.tcc": "c",
         "cmath": "c",
         "random": "c",
-        "numbers": "c"
+        "numbers": "c",
+        "stdlib.h": "c"
     }
 }

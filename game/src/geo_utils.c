@@ -35,6 +35,18 @@ Vector2 VectorScaled(Vector2 v, float scale)
 		v.y * scale
 	};
 }
+
+
+static inline
+Vector2 GetRandomVector2(float magnitude)
+{
+	double theta = (float)(GetRandomValue(0, 3600)) / 3600.0 * (2.0 * PI);
+	return (Vector2) {
+		cos(theta) * magnitude,
+		sin(theta) * magnitude
+	};
+}
+
 // -------------
 // ~VECTOR2
 // -------------

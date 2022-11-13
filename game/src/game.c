@@ -3,6 +3,7 @@
 #include "board.c"
 #include "ball.c"
 #include "geo_utils.c"
+#include "particle_generator.c"
 
 #define BALL_COUNT 5
 
@@ -13,6 +14,8 @@ struct Game
 	Player player;
 	Board board;
 	Ball* balls;
+
+	ParticleGenerator particle_generator;
 
 } Game;
 
@@ -65,6 +68,17 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 
 		if (ball_collided_with_brick)
 		{
+			AddParticleGroup(&game->particle_generator, 
+				(Particle) {
+					.position = ball->position,
+					.size = 3,
+					.color = BLUE,
+					.lifetime = 2.0,
+					.type = SQUARE
+				},
+				10
+			);
+
 			if (!InRange(ball->position.x, brick->position.x, brick->position.x + BRICK_WIDTH)
 				|| InRange(ball->position.y, brick->position.y, brick->position.y + BRICK_HEIGHT))
 			{
@@ -87,6 +101,7 @@ void InitGame(Game* game)
 	game->frame = 0;
 	ResetPlayerPosition(&(game->player));
 	InitBoard(&(game->board), (Vector2) {200, 100});
+	InitParticleGenerator(&game->particle_generator, PARTICLE_GENERATOR_STARTING_CAPACITY);
 
 	game->balls = MemAlloc(BALL_COUNT * sizeof(Ball));
 	Ball* ball = game->balls;
@@ -103,7 +118,7 @@ static
 void UpdateGame(Game* game, float delta)
 {
 	MovePlayer(&(game->player), delta);
-
+	TickParticleGenerator(&game->particle_generator, delta);
 
 	Ball* ball = game->balls;
 	for (int i = 0; i < BALL_COUNT; i++)
@@ -135,4 +150,7 @@ void DrawGame(Game* game, float delta)
 
 		ball++;
 	}
+
+	// DRAW PARTICLES
+	DrawParticleGenerator(&game->particle_generator);
 }
