@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 
 #ifndef _UTILS
 #define _UTILS
@@ -92,17 +93,6 @@ const char* Vector2ToConstChar(Vector2 vec)
     return c;
 }
 
-static
-float Clamp(float value, float mn, float mx)
-{
-    if (value > mx)
-        return mx;
-
-    if (value < mn)
-        return mn;
-
-    return value;
-}
 
 static
 bool InRange(float value, float start, float end)

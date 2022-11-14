@@ -1,4 +1,6 @@
 #include "raylib.h"
+#include "raymath.h"
+
 #include "math.h"
 #include "utils.c"
 
@@ -73,12 +75,7 @@ Vector2 AngleToVector(float angle)
 static inline
 Vector2 VectorRotated(Vector2 v, float angle)
 {
-	float len = VectorLen(v);
-	float v_angle = VectorAngle(v) + angle;
-	return VectorScaled(
-		AngleToVector(v_angle),
-		len
-	);
+	return Vector2Rotate(v, angle);
 }
 
 
@@ -126,5 +123,22 @@ float DistPointToSegment(Vector2 p, Vector2 a, Vector2 b)
 	return Dot(pq, pq);
 }
 
+
+
+/*
+	Center stays the same 
+		x, y, width, height updated accordingly
+*/
+static
+Rectangle ContractRectangle(Rectangle rect, float width_contract, float height_contract)
+{
+	rect.x += width_contract / 2.0;
+	rect.y += height_contract / 2.0;
+
+	rect.width -= width_contract;
+	rect.height -= height_contract;
+
+	return rect;
+}
 
 #endif

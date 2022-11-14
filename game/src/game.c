@@ -3,10 +3,13 @@
 #include "board.c"
 #include "ball.c"
 #include "geo_utils.c"
+
 #include "particle_generator.c"
 #include "sound.c"
+#include "camera.c"
 
 #define BALL_COUNT 5
+#define BALL_SIZE 5
 
 typedef 
 struct Game
@@ -18,6 +21,7 @@ struct Game
 
 	ParticleGenerator particle_generator;
 	SoundManager sound_manager;
+	CameraManager camera_manager;
 
 } Game;
 
@@ -35,13 +39,26 @@ void InitGame(Game* game)
 	InitBoard(&(game->board), (Vector2) {200, 100});
 	InitParticleGenerator(&game->particle_generator, PARTICLE_GENERATOR_STARTING_CAPACITY);
 	InitSoundManager(&game->sound_manager);
+	{
+		float screenWidth = 1.0f * GetScreenWidth();
+		float screenHeight = 1.0f * GetScreenHeight();
+
+		Camera2D camera = { 0 };
+		camera.target = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+		camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+		camera.rotation = 0.0f;
+		camera.zoom = 1.0f;
+
+		game->camera_manager.camera = camera;
+	}
+
 
 	game->balls = MemAlloc(BALL_COUNT * sizeof(Ball));
 	Ball* ball = game->balls;
 
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
-		InitBall(ball, (Vector2) {200 + 50.0 * i, 100}, (Vector2) {300, 120}, 5.0);
+		InitBall(ball, (Vector2) {200 + 50.0 * i, 100}, (Vector2) {300, 120}, BALL_SIZE);
 		ball++;
 	}
 }
@@ -67,6 +84,8 @@ void UpdateGame(Game* game, float delta)
 static
 void DrawGame(Game* game, float delta)
 {
+	BeginMode2D(game->camera_manager.camera);
+
 	// DRAW PLAYER
 	Player* player = &(game->player);
 	DrawPlayer(player);
@@ -86,6 +105,8 @@ void DrawGame(Game* game, float delta)
 
 	// DRAW PARTICLES
 	DrawParticleGenerator(&game->particle_generator);
+
+	EndMode2D();
 }
 
 
@@ -125,12 +146,23 @@ void HandleCollisions(Game* game, float delta)
 				if (IsBrickDestroyed(brick))
 					continue;
 
-				bool particle_collided_with_brick = CheckCollisionCircleRec(particle->position, particle->size, GetBrickRect(brick));
+				bool particle_collided_with_brick = CheckCollisionCircleRec(
+						particle->position, particle->size, 
+						ContractRectangle(GetBrickRect(brick), 4, 2)
+				);
+
+				
 			
 				if (particle_collided_with_brick)
 				{
-					particle->life = 0;
-					particle->life_t = 0;
+					// particle->color.a = 100.0;
+
+					if (IsParticleImmune(particle) == false)
+					{
+						particle->life = 0;
+						particle->life_t = 0;
+					}
+
 					// MarkParticleFree(&game->particle_generator, active_particles[particle_count]);
 					break;
 				}
@@ -181,6 +213,7 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 					.type = CIRCLE,
 
 					.position = ball->position,
+					// .position = VectorDif(ball->position, VectorScaled(direction, 5.0)),
 					.size = 3,
 					.color = BLUE,
 					.lifetime = 2.0,

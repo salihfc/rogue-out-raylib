@@ -6,7 +6,7 @@
 
 static const float EXTEND_RATIO = 0.9f;
 static const int PARTICLE_GENERATOR_STARTING_CAPACITY = 128;
-static const int MAX_PARTICLE_GENERATOR_CAPACITY = 16 * 1024;
+static const int MAX_PARTICLE_GENERATOR_CAPACITY = 16 * PARTICLE_GENERATOR_STARTING_CAPACITY;
 
 typedef
 struct ParticleGenerator

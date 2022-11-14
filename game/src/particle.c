@@ -4,6 +4,8 @@
 #include "geo_utils.c"
 #include "easings.c"
 
+static const float PARTICLE_IMMUNITY = 0.2;
+
 typedef enum {
     PARTICLE_NONE = -1,
     CIRCLE = 0,
@@ -39,6 +41,12 @@ bool IsParticleActive(Particle* particle)
     return particle->life > 0.0;
 }
 
+static
+bool IsParticleImmune(Particle* particle)
+{
+    return (particle->lifetime - particle->life) < PARTICLE_IMMUNITY;
+}
+
 
 static
 void MoveParticle(Particle* particle, float delta)
@@ -58,7 +66,8 @@ static
 void DrawParticle(Particle* particle)
 {
     float t = ease2_smoothstep(particle->life_t);
-    Color final_color = Fade(particle->color, t);
+    Color final_color = particle->color;
+    final_color.a *= t;
 
     switch (particle->type)
     {

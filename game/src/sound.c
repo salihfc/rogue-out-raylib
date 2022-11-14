@@ -1,5 +1,7 @@
 #include "raylib.h"
 
+#define SOUND_ENABLED false
+
 #ifndef __SOUND
 #define __SOUND
 
@@ -39,6 +41,8 @@ Sound GetSound(SoundManager* sound_manager, SFX sfx)
 static
 void PlaySFX(SoundManager* sound_manager, SFX sfx)
 {
+	if (!SOUND_ENABLED) return;
+
 	assert(sfx < (int)SFX_COUNT);
 	PlaySound(GetSound(sound_manager, sfx));
 }
@@ -46,6 +50,8 @@ void PlaySFX(SoundManager* sound_manager, SFX sfx)
 static
 void PlaySFXRandomize(SoundManager* sound_manager, SFX sfx)
 {
+	if (!SOUND_ENABLED) return;
+
 	Sound sound = GetSound(sound_manager, sfx);
 
 	float volume = GetRandomFloat(0.7, 0.9);

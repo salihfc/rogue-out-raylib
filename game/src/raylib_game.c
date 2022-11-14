@@ -161,10 +161,12 @@ static void Draw(Game* game, Camera2D* camera, float delta)
 	BeginDrawing();
 	ClearBackground(DARKGRAY);
 	
-	BeginMode2D(*camera);
 	{
 		DrawGame(game, delta);
+	}
 
+	BeginMode2D(*camera);
+	{
 		DrawCircleV(
 			(Vector2) {0, 0},
 			// (Vector2) {screenWidth / 2, screenHeight / 2},
