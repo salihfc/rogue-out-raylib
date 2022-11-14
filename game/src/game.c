@@ -67,6 +67,7 @@ void InitGame(Game* game)
 static
 void UpdateGame(Game* game, float delta)
 {
+	TickCameraManager(&game->camera_manager, delta);
 	MovePlayer(&(game->player), delta);
 	TickParticleGenerator(&game->particle_generator, delta);
 
@@ -84,7 +85,7 @@ void UpdateGame(Game* game, float delta)
 static
 void DrawGame(Game* game, float delta)
 {
-	BeginMode2D(game->camera_manager.camera);
+	BeginMode2D(GetModifiedCamera(&game->camera_manager));
 
 	// DRAW PLAYER
 	Player* player = &(game->player);
@@ -205,6 +206,8 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 		if (ball_collided_with_brick)
 		{
 			Vector2 direction = VectorDirectionTo(GetBrickCenter(brick), ball->position);
+
+			CameraAddTrauma(&game->camera_manager, 0.05);
 
 			PlaySFXRandomize(&game->sound_manager, BALL_BRICK_COLLISION);
 
