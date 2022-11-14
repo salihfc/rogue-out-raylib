@@ -4,13 +4,12 @@
 #include "geo_utils.c"
 #include "easings.c"
 
-typedef
-enum ParticleType{
-    NONE = -1,
+typedef enum {
+    PARTICLE_NONE = -1,
     CIRCLE = 0,
     SQUARE = 1,
 
-    COUNT
+    PARTICLE_TYPE_COUNT
 } ParticleType;
 
 typedef
@@ -63,7 +62,7 @@ void DrawParticle(Particle* particle)
 
     switch (particle->type)
     {
-    case NONE:
+    case PARTICLE_NONE:
         break;
     case CIRCLE:
         DrawCircleV(particle->position, particle->size, final_color);

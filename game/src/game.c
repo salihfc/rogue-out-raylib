@@ -4,6 +4,7 @@
 #include "ball.c"
 #include "geo_utils.c"
 #include "particle_generator.c"
+#include "sound.c"
 
 #define BALL_COUNT 5
 
@@ -16,11 +17,78 @@ struct Game
 	Ball* balls;
 
 	ParticleGenerator particle_generator;
+	SoundManager sound_manager;
 
 } Game;
 
 static
 void HandleCollisionBall(Game* game, Ball* ball, float delta);
+static
+void HandleCollisions(Game* game, float delta);
+
+
+static
+void InitGame(Game* game)
+{
+	game->frame = 0;
+	ResetPlayerPosition(&(game->player));
+	InitBoard(&(game->board), (Vector2) {200, 100});
+	InitParticleGenerator(&game->particle_generator, PARTICLE_GENERATOR_STARTING_CAPACITY);
+	InitSoundManager(&game->sound_manager);
+
+	game->balls = MemAlloc(BALL_COUNT * sizeof(Ball));
+	Ball* ball = game->balls;
+
+	for (int i = 0; i < BALL_COUNT; i++)
+	{
+		InitBall(ball, (Vector2) {200 + 50.0 * i, 100}, (Vector2) {300, 120}, 5.0);
+		ball++;
+	}
+}
+
+
+static
+void UpdateGame(Game* game, float delta)
+{
+	MovePlayer(&(game->player), delta);
+	TickParticleGenerator(&game->particle_generator, delta);
+
+	Ball* ball = game->balls;
+	for (int i = 0; i < BALL_COUNT; i++)
+	{
+		MoveBall(ball, delta);
+		ball++;
+	}
+
+	HandleCollisions(game, delta);
+}
+
+
+static
+void DrawGame(Game* game, float delta)
+{
+	// DRAW PLAYER
+	Player* player = &(game->player);
+	DrawPlayer(player);
+
+	// DRAW BOARD
+	Board* board = &(game->board);
+	DrawBoard(board);
+
+	// DRAW BALL
+	Ball* ball = game->balls;
+	for (int i = 0; i < BALL_COUNT; i++)
+	{
+		DrawBall(ball);
+
+		ball++;
+	}
+
+	// DRAW PARTICLES
+	DrawParticleGenerator(&game->particle_generator);
+}
+
+
 
 static
 void HandleCollisions(Game* game, float delta)
@@ -106,9 +174,11 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 		{
 			Vector2 direction = VectorDirectionTo(GetBrickCenter(brick), ball->position);
 
+			PlaySFXRandomize(&game->sound_manager, BALL_BRICK_COLLISION);
+
 			AddParticleGroup(&game->particle_generator, 
 				(Particle) {
-					.type = SQUARE,
+					.type = CIRCLE,
 
 					.position = ball->position,
 					.size = 3,
@@ -134,64 +204,4 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 			break;
 		}
 	}
-}
-
-static
-void InitGame(Game* game)
-{
-	game->frame = 0;
-	ResetPlayerPosition(&(game->player));
-	InitBoard(&(game->board), (Vector2) {200, 100});
-	InitParticleGenerator(&game->particle_generator, PARTICLE_GENERATOR_STARTING_CAPACITY);
-
-	game->balls = MemAlloc(BALL_COUNT * sizeof(Ball));
-	Ball* ball = game->balls;
-
-	for (int i = 0; i < BALL_COUNT; i++)
-	{
-		InitBall(ball, (Vector2) {200 + 50.0 * i, 100}, (Vector2) {300, 120}, 5.0);
-		ball++;
-	}
-}
-
-
-static
-void UpdateGame(Game* game, float delta)
-{
-	MovePlayer(&(game->player), delta);
-	TickParticleGenerator(&game->particle_generator, delta);
-
-	Ball* ball = game->balls;
-	for (int i = 0; i < BALL_COUNT; i++)
-	{
-		MoveBall(ball, delta);
-		ball++;
-	}
-
-	HandleCollisions(game, delta);
-}
-
-
-static
-void DrawGame(Game* game, float delta)
-{
-	// DRAW PLAYER
-	Player* player = &(game->player);
-	DrawPlayer(player);
-
-	// DRAW BOARD
-	Board* board = &(game->board);
-	DrawBoard(board);
-
-	// DRAW BALL
-	Ball* ball = game->balls;
-	for (int i = 0; i < BALL_COUNT; i++)
-	{
-		DrawBall(ball);
-
-		ball++;
-	}
-
-	// DRAW PARTICLES
-	DrawParticleGenerator(&game->particle_generator);
 }
