@@ -28,11 +28,47 @@ void HandleCollisions(Game* game, float delta)
 	Player* player = &game->player;
 
 	{
+		// Ball collisions
 		Ball* ball = game->balls;
 		for (int i = 0; i < BALL_COUNT; i++)
 		{
 			HandleCollisionBall(game, ball, delta);
 			ball++;
+		}
+	}
+
+	{
+		// Particle collisions
+		Particle* particles = game->particle_generator.particles;
+		int* active_particles = game->particle_generator.active_particles;
+		int particle_count = 0;
+
+		while (particle_count < game->particle_generator.particle_count)
+		{
+			Particle* particle = particles + active_particles[particle_count];
+
+			// 
+			Brick* it = &game->board.bricks; 
+			int brick_ct = 0;
+
+			while (brick_ct++ < BOARD_ROW * BOARD_COL)
+			{
+				Brick* brick = it++;
+				if (IsBrickDestroyed(brick))
+					continue;
+
+				bool particle_collided_with_brick = CheckCollisionCircleRec(particle->position, particle->size, GetBrickRect(brick));
+			
+				if (particle_collided_with_brick)
+				{
+					particle->life = 0;
+					particle->life_t = 0;
+					// MarkParticleFree(&game->particle_generator, active_particles[particle_count]);
+					break;
+				}
+			}
+
+			particle_count++;
 		}
 	}
 }
@@ -68,6 +104,8 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 
 		if (ball_collided_with_brick)
 		{
+			Vector2 direction = VectorDirectionTo(GetBrickCenter(brick), ball->position);
+
 			AddParticleGroup(&game->particle_generator, 
 				(Particle) {
 					.type = SQUARE,
@@ -78,7 +116,8 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 					.lifetime = 2.0,
 					.damping = 0.7
 				},
-				10
+				10,
+				direction
 			);
 
 			if (!InRange(ball->position.x, brick->position.x, brick->position.x + BRICK_WIDTH)

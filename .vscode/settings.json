@@ -1,11 +1,11 @@
 {
-    "files.associations": {
-        "raylib.h": "c",
-        "*.m": "c",
-        "*.tcc": "c",
-        "cmath": "c",
-        "random": "c",
-        "numbers": "c",
-        "stdlib.h": "c"
-    }
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/*.o": true,
+		"**/*.exe": true,
+	}
 }

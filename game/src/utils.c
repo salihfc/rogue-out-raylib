@@ -111,4 +111,18 @@ bool InRange(float value, float start, float end)
 }
 
 
+static
+float GetRandomFract()
+{
+    return GetRandomValue(0, __INT_MAX__) * 1.0f / __INT_MAX__;
+}
+
+
+static
+float GetRandomFloat(float begin, float end)
+{
+    return begin + (end - begin) * GetRandomFract();
+}
+
+
 #endif

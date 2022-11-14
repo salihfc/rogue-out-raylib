@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "geo_utils.c"
 
 static const int BRICK_WIDTH = 30;
 static const int BRICK_HEIGHT = 10;
@@ -18,6 +19,19 @@ Rectangle GetBrickRect(Brick* brick)
         brick->position.x, brick->position.y,
         BRICK_WIDTH, BRICK_HEIGHT
     };
+}
+
+
+static
+Vector2 GetBrickCenter(Brick* brick)
+{
+    return VectorSum(
+        brick->position,
+        VectorScaled(
+            (Vector2){BRICK_WIDTH, BRICK_HEIGHT},
+            0.5
+        )
+    );
 }
 
 

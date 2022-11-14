@@ -36,6 +36,58 @@ Vector2 VectorScaled(Vector2 v, float scale)
 	};
 }
 
+static inline
+float VectorLen(Vector2 v)
+{
+	return sqrt(v.x*v.x + v.y*v.y);
+}
+
+
+static inline
+Vector2 VectorNormalized(Vector2 v)
+{
+	float len = VectorLen(v);
+	return (Vector2) {
+		v.x / len,
+		v.y / len
+	};
+}
+
+
+static inline
+float VectorAngle(Vector2 v)
+{
+	return atan2f(v.y, v.x);
+}
+
+static inline 
+Vector2 AngleToVector(float angle)
+{
+	return (Vector2) {
+		cosf(angle),
+		sinf(angle)
+	};
+}
+
+
+static inline
+Vector2 VectorRotated(Vector2 v, float angle)
+{
+	float len = VectorLen(v);
+	float v_angle = VectorAngle(v) + angle;
+	return VectorScaled(
+		AngleToVector(v_angle),
+		len
+	);
+}
+
+
+static inline
+Vector2 VectorDirectionTo(Vector2 from, Vector2 to)
+{
+	return VectorNormalized(VectorDif(to, from));
+}
+
 
 static inline
 Vector2 GetRandomVector2(float magnitude)

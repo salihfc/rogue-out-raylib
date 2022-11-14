@@ -137,13 +137,17 @@ void AddParticle(ParticleGenerator* particle_generator, Particle particle)
 
 
 static
-void AddParticleGroup(ParticleGenerator* particle_generator, Particle particle_defaults, int group_size)
+void AddParticleGroup(ParticleGenerator* particle_generator, Particle particle_defaults, int group_size, Vector2 direction)
 {
     // Randomize some properties
     // Velocity only for now
     for (int idx = 0; idx < group_size; idx++)
     {
-        particle_defaults.velocity = VectorScaled(GetRandomVector2(1.0), GetRandomValue(10, 200));
+        particle_defaults.velocity = VectorScaled(
+            VectorRotated(direction, GetRandomFloat(-PI/4, PI/4)),
+            GetRandomValue(10, 200)
+        );
+        
         AddParticle(particle_generator, particle_defaults);
     }
 }
