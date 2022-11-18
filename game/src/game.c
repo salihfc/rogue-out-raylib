@@ -75,7 +75,7 @@ void UpdateGame(Game* game, float delta)
 	Ball* ball = game->balls;
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
-		MoveBall(ball, delta);
+		TickBall(ball, delta);
 		ball++;
 	}
 
@@ -257,6 +257,7 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 				);
 			}
 
+			AddSpeedToBall(ball, 10);
 			break;
 		}
 	}

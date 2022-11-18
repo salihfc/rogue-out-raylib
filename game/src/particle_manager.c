@@ -116,8 +116,8 @@ void AddParticle(ParticleManager* particle_manager, Particle particle)
     if (_ReallocRequired(particle_manager, 1))
     {
         _IncreaseCapacity(particle_manager);
-        TraceLog(LOG_INFO, "[ParticleManager] Realloc Required");
-        printf("NEW CAP: [%d]", particle_manager->capacity);
+        printf("[ParticleManager] Realloc Required ==> NEW CAP: [%d]\n", particle_manager->capacity);
+        fflush(stdout);
     }
 
     int* current_active = _GetCurrentActiveBuffer(particle_manager);

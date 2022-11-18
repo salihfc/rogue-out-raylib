@@ -13,7 +13,7 @@ typedef enum {
 } SFX;
 
 static const char SOUND_FILES[(int)SFX_COUNT][64] = {
-	"resources/coin.wav", 
+	"resources/sfx/zzox/zzox-fx current-move-1.wav", 
 };
 
 typedef
@@ -55,7 +55,7 @@ void PlaySFXRandomize(SoundManager* sound_manager, SFX sfx)
 	Sound sound = GetSound(sound_manager, sfx);
 
 	float volume = GetRandomFloat(0.7, 0.9);
-	float pitch = GetRandomFloat(0.0, 1.0);
+	float pitch = GetRandomFloat(0.7, 1.0);
 
     SetSoundVolume(sound, volume);                 // Set volume for a sound (1.0 is max level)
     SetSoundPitch(sound, pitch);                   // Set pitch for a sound (1.0 is base level)
