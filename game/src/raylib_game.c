@@ -18,6 +18,8 @@
 #include "input.c"
 #include "draw_utils.c"
 
+#define DELTA ( 0.0166666666f )
+
 #if defined(PLATFORM_WEB)
 	#include <emscripten/emscripten.h>
 #endif
@@ -46,6 +48,13 @@ static void Draw(Game*, Camera2D*, float);          // Update and draw one frame
 
 // helpers
 
+// Setup camera
+Camera2D camera = { 0 };
+
+// Setup and init first screen
+Game game;
+
+
 //----------------------------------------------------------------------------------
 // Main entry point
 //----------------------------------------------------------------------------------
@@ -66,16 +75,10 @@ int main(void)
 	PlayMusicStream(music);
 
 	SetTraceLogLevel(LOG_INFO);
-
-	// Setup camera
-    Camera2D camera = { 0 };
-    camera.target = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
-    camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
-
-	// Setup and init first screen
-	Game game;
+	camera.target = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+	camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+	camera.rotation = 0.0f;
+	camera.zoom = 1.0f;
 	InitGame(&game);
 
 
@@ -91,7 +94,7 @@ int main(void)
 		float delta = GetFrameTime();
 		Input(&game, &camera, delta);
 		Update(&game, &camera, delta);
-		Draw(&game, &camera, delta);
+		Draw(&game, &camera, delta);	
 	}
 #endif
 
@@ -192,3 +195,10 @@ static void Draw(Game* game, Camera2D* camera, float delta)
 	//----------------------------------------------------------------------------------
 }
 
+static
+void UpdateDrawFrame()
+{
+	Input(&game, &camera, DELTA);
+	Update(&game, &camera, DELTA);
+	Draw(&game, &camera, DELTA);
+}

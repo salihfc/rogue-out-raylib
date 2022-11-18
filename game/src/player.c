@@ -40,6 +40,7 @@ void InitPlayer(Player* player)
 
             .emission_per_second = 10.0,
             .particle_per_emission = 4,
+            .particle_type = SQUARE,
         };
  
     InitParticleEmitter(&player->left_emitter);
@@ -58,6 +59,7 @@ void InitPlayer(Player* player)
 
             .emission_per_second = 10.0,
             .particle_per_emission = 4,
+            .particle_type = SQUARE,
         };
  
     InitParticleEmitter(&player->right_emitter);

@@ -26,6 +26,7 @@ struct Particle
     Vector2 position;
     Vector2 velocity;
 
+    float base_size;
     float size;
 
     float lifetime;
@@ -37,6 +38,10 @@ struct Particle
     Color color;
 
     float immunity_duration;
+
+    // animation
+    EASING size_easing;
+
 } Particle;
 
 
@@ -56,11 +61,7 @@ bool IsParticleImmune(Particle* particle)
 static
 void MoveParticle(Particle* particle, float delta)
 {
-    particle->life -= delta;
     particle->position = VectorSum(particle->position, VectorScaled(particle->velocity, delta));
-
-    assert(particle->lifetime);
-    particle->life_t = particle->life / particle->lifetime;
 
     float damp = 1.0 - (1.0 - particle->damping) * delta;
     particle->velocity = VectorScaled(particle->velocity, damp);
@@ -68,21 +69,41 @@ void MoveParticle(Particle* particle, float delta)
 
 
 static
+void TickParticle(Particle* particle, float delta)
+{
+    MoveParticle(particle, delta);
+
+    particle->life -= delta;
+    assert(particle->lifetime);
+    // anim_t calculation
+    particle->life_t = particle->life / particle->lifetime;
+    particle->size = (1 - apply_easing(particle->size_easing, particle->life_t)) * particle->base_size;
+}
+
+
+static
 void DrawParticle(Particle* particle)
 {
+    if (particle->size < 0.01)
+        return;
+
     float t = ease2_smoothstep(particle->life_t);
     Color final_color = particle->color;
     final_color.a *= t;
+
+    float final_size = particle->size * 4.0;
+
+    Vector2 final_position = particle->position;
 
     switch (particle->type)
     {
     case PARTICLE_NONE:
         break;
     case CIRCLE:
-        DrawCircleV(particle->position, particle->size, final_color);
+        DrawCircleV(final_position, final_size, final_color);
         break;
     case SQUARE:
-        DrawRectangleV(particle->position, (Vector2){particle->size, particle->size}, final_color);
+        DrawRectangleV(final_position, (Vector2){final_size, final_size}, final_color);
         break;
     
     default:

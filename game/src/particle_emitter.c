@@ -24,6 +24,8 @@ struct ParticleEmitter
 	Vector2 offset_from_parent;
 
 	float timer;
+
+	ParticleType particle_type;
 } ParticleEmitter;
 
 
@@ -45,9 +47,9 @@ void _EmitterEmit(ParticleEmitter* emitter, Vector2 parent_position)
 	{
 		AddParticle(&emitter->particle_manager, 
 			(Particle) {
-				.type = SQUARE,
+				.type = emitter->particle_type,
 				.lifetime = GetRandomInRange(emitter->lifetime, UNIFORM),
-				.size = GetRandomInRange(emitter->size, UNIFORM),
+				.base_size = GetRandomInRange(emitter->size, UNIFORM),
 				.color = Fade(emitter->base_color, GetRandomInRange(emitter->alpha, UNIFORM)),
 
 				.velocity = VectorScaled(AngleToVector(GetRandomInRange(emitter->spread_angle, emitter->spread_distribution)), GetRandomInRange(emitter->speed, UNIFORM)),
@@ -55,6 +57,7 @@ void _EmitterEmit(ParticleEmitter* emitter, Vector2 parent_position)
 
 				.damping = 0.7,
 				.immunity_duration = 1.0,
+				.size_easing = EASE_CIRCLE4,
 			}
 		);
 	}

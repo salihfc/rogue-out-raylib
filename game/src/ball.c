@@ -26,7 +26,7 @@ void InitBall(Ball* ball, Vector2 position, Vector2 velocity, float radius)
         .alpha = (Range) {.min = 0.4, .max = 1.0},
         .lifetime = (Range) {.min = 0.5, .max = 1},
         .size = (Range) {.min = 2, .max = 4},
-        .speed = (Range) {.min = 0, .max = 10},
+        .speed = (Range) {.min = 0, .max = 0},
 
         .spread_angle = (Range) { 0, 2 * PI },
         .spread_distribution = UNIFORM,
@@ -34,6 +34,7 @@ void InitBall(Ball* ball, Vector2 position, Vector2 velocity, float radius)
 
         .emission_per_second = 100.0,
         .particle_per_emission = 1,
+        .particle_type = CIRCLE,
     };
     
     InitParticleEmitter(&ball->particle_emitter);
@@ -50,39 +51,7 @@ void DrawBall(Ball* ball)
         BLACK, YELLOW
     );
 
-    // Tail 0
-    Vector2 prev_pos = VectorDif(
-        ball->position,
-        VectorScaled(
-            VectorNormalized(ball->velocity),
-            10.0
-        )
-    );
-
-    DrawCircleGradient(
-        prev_pos.x, prev_pos.y,
-        ball->radius - 2.0,
-        Fade(BLACK, 0.7), Fade(YELLOW, 0.7)
-    );
-
-    // Tail 1
-    prev_pos = VectorDif(
-        ball->position,
-        VectorScaled(
-            VectorNormalized(ball->velocity),
-            20.0
-        )
-    );
-
-    DrawCircleGradient(
-        prev_pos.x, prev_pos.y,
-        ball->radius - 4.0,
-        Fade(BLACK, 0.7), Fade(YELLOW, 0.7)
-    );
-
-
     // Particles
-
     DrawParticleEmitter(&ball->particle_emitter);
 }
 

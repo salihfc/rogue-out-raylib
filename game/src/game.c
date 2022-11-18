@@ -187,6 +187,10 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 	{
 		ball->velocity.y *= -1;
 		ball->position = VectorSum(ball->position, VectorScaled(ball->velocity, delta));
+		
+		CameraAddTrauma(&game->camera_manager, 0.4);
+
+		printf("[PLAYER HIT BALL]\n");
 	}
 
 	Brick* it = (Brick*)(game->board.bricks);
@@ -218,10 +222,11 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 
 					.position = ball->position,
 					// .position = VectorDif(ball->position, VectorScaled(direction, 5.0)),
-					.size = 3,
+					.base_size = 3,
 					.color = BLUE,
 					.lifetime = 2.0,
-					.damping = 0.7
+					.damping = 0.7,
+					.size_easing = EASE_CIRCLE4,
 				},
 				10,
 				direction
@@ -246,18 +251,21 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 						.type = SQUARE,
 
 						.position = brick->position,
-						.size = 10,
+						.base_size = 10,
 						.color = RED,
 						.lifetime = 2.0,
 						.damping = 0.7,
 						.immunity_duration = 1.0,
+						.size_easing = EASE_CIRCLE4,
+
 					},
 					4,
 					direction
 				);
+	
+				AddSpeedToBall(ball, 10);
 			}
 
-			AddSpeedToBall(ball, 10);
 			break;
 		}
 	}

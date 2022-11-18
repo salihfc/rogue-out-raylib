@@ -73,7 +73,7 @@ void TickParticleManager(ParticleManager* particle_manager, float delta)
     for (int i = 0; i < particle_manager->particle_count; i++)
     {
         Particle* particle = &particle_manager->particles[*it];
-        MoveParticle(particle, delta);
+        TickParticle(particle, delta);
 
         if (IsParticleActive(particle))
         {
