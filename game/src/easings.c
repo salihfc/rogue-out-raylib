@@ -1,6 +1,9 @@
 #include "raylib.h"
 
 
+#ifndef __EASINGS
+#define __EASINGS
+
 static
 float ease_smoothstep(float t)
 {
@@ -13,3 +16,6 @@ float ease2_smoothstep(float t)
 {
 	return ease_smoothstep(ease_smoothstep(t));
 }
+
+
+#endif

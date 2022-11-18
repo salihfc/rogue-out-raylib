@@ -1,8 +1,9 @@
 #include "raylib.h"
+#include "geo_utils.c"
 #include "utils.c"
 
 typedef
-struct Ball
+struct
 {
     Vector2 position;
     Vector2 velocity;
@@ -23,10 +24,41 @@ void InitBall(Ball* ball, Vector2 position, Vector2 velocity, float radius)
 static
 void DrawBall(Ball* ball)
 {
+    // Main body
     DrawCircleGradient(
         ball->position.x, ball->position.y,
         ball->radius + 0.0,
         BLACK, YELLOW
+    );
+
+    // Tail 0
+    Vector2 prev_pos = VectorDif(
+        ball->position,
+        VectorScaled(
+            VectorNormalized(ball->velocity),
+            10.0
+        )
+    );
+
+    DrawCircleGradient(
+        prev_pos.x, prev_pos.y,
+        ball->radius - 2.0,
+        Fade(BLACK, 0.7), Fade(YELLOW, 0.7)
+    );
+
+    // Tail 1
+    prev_pos = VectorDif(
+        ball->position,
+        VectorScaled(
+            VectorNormalized(ball->velocity),
+            20.0
+        )
+    );
+
+    DrawCircleGradient(
+        prev_pos.x, prev_pos.y,
+        ball->radius - 4.0,
+        Fade(BLACK, 0.7), Fade(YELLOW, 0.7)
     );
 }
 
@@ -39,9 +71,9 @@ void MoveBall(Ball* ball, float delta)
         VectorScaled(ball->velocity, delta)
     );
 
-    if (ball->position.x < 0 || SCREEN_BOUNDARY.width < ball->position.x) 
+    if (ball->position.x < 0 || GetScreenRect().width < ball->position.x) 
         ball->velocity.x *= -1;
 
-    if (ball->position.y < 0 || SCREEN_BOUNDARY.height < ball->position.y) 
+    if (ball->position.y < 0 || GetScreenRect().height < ball->position.y) 
         ball->velocity.y *= -1;
 }

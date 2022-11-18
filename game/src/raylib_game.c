@@ -159,7 +159,7 @@ static void Draw(Game* game, Camera2D* camera, float delta)
 	// Draw
 	//----------------------------------------------------------------------------------
 	BeginDrawing();
-	ClearBackground(DARKGRAY);
+	ClearBackground(BLACK);
 	
 	{
 		DrawGame(game, delta);

@@ -2,8 +2,8 @@
 #include "brick.c"
 #include "utils.c"
 
-#define BOARD_ROW 24
-#define BOARD_COL 24
+#define BOARD_ROW 8
+#define BOARD_COL 12
 
 #define PAD_ROW 10
 #define PAD_COL 10

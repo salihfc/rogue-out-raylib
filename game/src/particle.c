@@ -4,6 +4,10 @@
 #include "geo_utils.c"
 #include "easings.c"
 
+
+#ifndef __PARTICLE
+#define __PARTICLE
+
 static const float PARTICLE_IMMUNITY = 0.2;
 
 typedef enum {
@@ -32,6 +36,7 @@ struct Particle
 
     Color color;
 
+    float immunity_duration;
 } Particle;
 
 
@@ -44,7 +49,7 @@ bool IsParticleActive(Particle* particle)
 static
 bool IsParticleImmune(Particle* particle)
 {
-    return (particle->lifetime - particle->life) < PARTICLE_IMMUNITY;
+    return (particle->lifetime - particle->life) < particle->immunity_duration;
 }
 
 
@@ -84,3 +89,6 @@ void DrawParticle(Particle* particle)
         break;
     }
 }
+
+
+#endif

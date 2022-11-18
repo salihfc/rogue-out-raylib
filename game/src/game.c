@@ -4,7 +4,7 @@
 #include "ball.c"
 #include "geo_utils.c"
 
-#include "particle_generator.c"
+#include "particle_manager.c"
 #include "sound.c"
 #include "camera.c"
 
@@ -12,14 +12,14 @@
 #define BALL_SIZE 5
 
 typedef 
-struct Game
+struct
 {
 	int frame;
 	Player player;
 	Board board;
 	Ball* balls;
 
-	ParticleGenerator particle_generator;
+	ParticleManager particle_manager;
 	SoundManager sound_manager;
 	CameraManager camera_manager;
 
@@ -36,8 +36,9 @@ void InitGame(Game* game)
 {
 	game->frame = 0;
 	ResetPlayerPosition(&(game->player));
+	InitPlayer(&game->player);
 	InitBoard(&(game->board), (Vector2) {200, 100});
-	InitParticleGenerator(&game->particle_generator, PARTICLE_GENERATOR_STARTING_CAPACITY);
+	InitParticleManager(&game->particle_manager, PARTICLE_MANAGER_STARTING_CAPACITY);
 	InitSoundManager(&game->sound_manager);
 	{
 		float screenWidth = 1.0f * GetScreenWidth();
@@ -68,8 +69,8 @@ static
 void UpdateGame(Game* game, float delta)
 {
 	TickCameraManager(&game->camera_manager, delta);
-	MovePlayer(&(game->player), delta);
-	TickParticleGenerator(&game->particle_generator, delta);
+	TickPlayer(&(game->player), delta);
+	TickParticleManager(&game->particle_manager, delta);
 
 	Ball* ball = game->balls;
 	for (int i = 0; i < BALL_COUNT; i++)
@@ -105,7 +106,7 @@ void DrawGame(Game* game, float delta)
 	}
 
 	// DRAW PARTICLES
-	DrawParticleGenerator(&game->particle_generator);
+	DrawParticleManager(&game->particle_manager);
 
 	EndMode2D();
 }
@@ -129,16 +130,16 @@ void HandleCollisions(Game* game, float delta)
 
 	{
 		// Particle collisions
-		Particle* particles = game->particle_generator.particles;
-		int* active_particles = game->particle_generator.active_particles;
+		Particle* particles = game->particle_manager.particles;
+		int* active_particles = game->particle_manager.active_particles;
 		int particle_count = 0;
 
-		while (particle_count < game->particle_generator.particle_count)
+		while (particle_count < game->particle_manager.particle_count)
 		{
 			Particle* particle = particles + active_particles[particle_count];
 
 			// 
-			Brick* it = &game->board.bricks; 
+			Brick* it = (Brick*) game->board.bricks; 
 			int brick_ct = 0;
 
 			while (brick_ct++ < BOARD_ROW * BOARD_COL)
@@ -164,7 +165,7 @@ void HandleCollisions(Game* game, float delta)
 						particle->life_t = 0;
 					}
 
-					// MarkParticleFree(&game->particle_generator, active_particles[particle_count]);
+					// MarkParticleFree(&game->particle_manager, active_particles[particle_count]);
 					break;
 				}
 			}
@@ -188,7 +189,7 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 		ball->position = VectorSum(ball->position, VectorScaled(ball->velocity, delta));
 	}
 
-	Brick* it = &(game->board.bricks);
+	Brick* it = (Brick*)(game->board.bricks);
 
 	int brick_ct = 0;
 
@@ -211,7 +212,7 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 
 			PlaySFXRandomize(&game->sound_manager, BALL_BRICK_COLLISION);
 
-			AddParticleGroup(&game->particle_generator, 
+			AddParticleGroup(&game->particle_manager, 
 				(Particle) {
 					.type = CIRCLE,
 
@@ -237,6 +238,25 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 			ball->position = VectorSum(ball->position, VectorScaled(ball->velocity, delta));
 
 			brick->remainingHp -= 1;
+
+			if (brick->remainingHp == 0)
+			{
+				AddParticleGroup(&game->particle_manager, 
+					(Particle) {
+						.type = SQUARE,
+
+						.position = brick->position,
+						.size = 10,
+						.color = RED,
+						.lifetime = 2.0,
+						.damping = 0.7,
+						.immunity_duration = 1.0,
+					},
+					4,
+					direction
+				);
+			}
+
 			break;
 		}
 	}

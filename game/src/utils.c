@@ -4,7 +4,12 @@
 #ifndef _UTILS
 #define _UTILS
 
-static const Rectangle SCREEN_BOUNDARY = (Rectangle) {.x = 0, .y = 0, .width = 1356, .height = 900};  
+static
+Rectangle GetScreenRect()
+{
+    return (Rectangle) {.x = 0, .y = 0, .width = GetScreenWidth(), .height = GetScreenHeight()};
+}
+
 
 static
 void ReverseRange(char* left, char* right)

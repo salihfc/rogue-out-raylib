@@ -25,8 +25,8 @@ void Moveobject(Object2D* object, float delta)
 {
     object->position = VectorSum(object->position, object->velocity);
 
-    object->position.x = Clamp(object->position.x, 0, SCREEN_BOUNDARY.width  - object->size.x);
-    object->position.y = Clamp(object->position.y, 0, SCREEN_BOUNDARY.height - object->size.y);
+    object->position.x = Clamp(object->position.x, 0, GetScreenRect().width  - object->size.x);
+    object->position.y = Clamp(object->position.y, 0, GetScreenRect().height - object->size.y);
 
     // Damping
     object->velocity.x *= object->damping_factor;
