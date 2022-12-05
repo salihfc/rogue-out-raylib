@@ -7,72 +7,68 @@
 #include "particle_manager.c"
 #include "sound.c"
 #include "camera.c"
+#include "shader_loader.c"
 
 #define BALL_COUNT 5
 #define BALL_SIZE 5
 
-typedef 
-struct
+typedef struct
 {
 	int frame;
 	Player player;
 	Board board;
-	Ball* balls;
+	Ball *balls;
 
 	ParticleManager particle_manager;
 	SoundManager sound_manager;
 	CameraManager camera_manager;
+	ShaderLoader shader_loader;
 
 } Game;
 
-static
-void HandleCollisionBall(Game* game, Ball* ball, float delta);
-static
-void HandleCollisions(Game* game, float delta);
+static void HandleCollisionBall(Game *game, Ball *ball, float delta);
+static void HandleCollisions(Game *game, float delta);
 
-
-static
-void InitGame(Game* game)
+static void InitGame(Game *game)
 {
 	game->frame = 0;
 	ResetPlayerPosition(&(game->player));
 	InitPlayer(&game->player);
-	InitBoard(&(game->board), (Vector2) {200, 100});
+	InitBoard(&(game->board), (Vector2){200, 100});
 	InitParticleManager(&game->particle_manager, PARTICLE_MANAGER_STARTING_CAPACITY);
 	InitSoundManager(&game->sound_manager);
+	InitShaderLoader(&game->shader_loader);
+
 	{
 		float screenWidth = 1.0f * GetScreenWidth();
 		float screenHeight = 1.0f * GetScreenHeight();
 
-		Camera2D camera = { 0 };
-		camera.target = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
-		camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+		Camera2D camera = {0};
+		camera.target = (Vector2){screenWidth / 2.0f, screenHeight / 2.0f};
+		camera.offset = (Vector2){screenWidth / 2.0f, screenHeight / 2.0f};
 		camera.rotation = 0.0f;
 		camera.zoom = 1.0f;
 
 		game->camera_manager.camera = camera;
 	}
 
-
 	game->balls = MemAlloc(BALL_COUNT * sizeof(Ball));
-	Ball* ball = game->balls;
+	Ball *ball = game->balls;
 
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
-		InitBall(ball, (Vector2) {200 + 50.0 * i, 100}, (Vector2) {300, 120}, BALL_SIZE);
+		InitBall(ball, (Vector2){200 + 50.0 * i, 100}, (Vector2){300, 120}, BALL_SIZE);
 		ball++;
 	}
 }
 
-
-static
-void UpdateGame(Game* game, float delta)
+static void UpdateGame(Game *game, float delta)
 {
 	TickCameraManager(&game->camera_manager, delta);
 	TickPlayer(&(game->player), delta);
 	TickParticleManager(&game->particle_manager, delta);
 
-	Ball* ball = game->balls;
+	Ball *ball = game->balls;
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
 		TickBall(ball, delta);
@@ -82,22 +78,20 @@ void UpdateGame(Game* game, float delta)
 	HandleCollisions(game, delta);
 }
 
-
-static
-void DrawGame(Game* game, float delta)
+static void DrawGame(Game *game, float delta)
 {
 	BeginMode2D(GetModifiedCamera(&game->camera_manager));
 
 	// DRAW PLAYER
-	Player* player = &(game->player);
+	Player *player = &(game->player);
 	DrawPlayer(player);
 
 	// DRAW BOARD
-	Board* board = &(game->board);
+	Board *board = &(game->board);
 	DrawBoard(board);
 
 	// DRAW BALL
-	Ball* ball = game->balls;
+	Ball *ball = game->balls;
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
 		DrawBall(ball);
@@ -107,20 +101,18 @@ void DrawGame(Game* game, float delta)
 
 	// DRAW PARTICLES
 	DrawParticleManager(&game->particle_manager);
-
 	EndMode2D();
+
+	DrawShader(&game->shader_loader);
 }
 
-
-
-static
-void HandleCollisions(Game* game, float delta)
+static void HandleCollisions(Game *game, float delta)
 {
-	Player* player = &game->player;
+	Player *player = &game->player;
 
 	{
 		// Ball collisions
-		Ball* ball = game->balls;
+		Ball *ball = game->balls;
 		for (int i = 0; i < BALL_COUNT; i++)
 		{
 			HandleCollisionBall(game, ball, delta);
@@ -130,31 +122,28 @@ void HandleCollisions(Game* game, float delta)
 
 	{
 		// Particle collisions
-		Particle* particles = game->particle_manager.particles;
-		int* active_particles = game->particle_manager.active_particles;
+		Particle *particles = game->particle_manager.particles;
+		int *active_particles = game->particle_manager.active_particles;
 		int particle_count = 0;
 
 		while (particle_count < game->particle_manager.particle_count)
 		{
-			Particle* particle = particles + active_particles[particle_count];
+			Particle *particle = particles + active_particles[particle_count];
 
-			// 
-			Brick* it = (Brick*) game->board.bricks; 
+			//
+			Brick *it = (Brick *)game->board.bricks;
 			int brick_ct = 0;
 
 			while (brick_ct++ < BOARD_ROW * BOARD_COL)
 			{
-				Brick* brick = it++;
+				Brick *brick = it++;
 				if (IsBrickDestroyed(brick))
 					continue;
 
 				bool particle_collided_with_brick = CheckCollisionCircleRec(
-						particle->position, particle->size, 
-						ContractRectangle(GetBrickRect(brick), 4, 2)
-				);
+						particle->position, particle->size,
+						ContractRectangle(GetBrickRect(brick), 4, 2));
 
-				
-			
 				if (particle_collided_with_brick)
 				{
 					// particle->color.a = 100.0;
@@ -175,31 +164,29 @@ void HandleCollisions(Game* game, float delta)
 	}
 }
 
-
-static
-void HandleCollisionBall(Game* game, Ball* ball, float delta)
+static void HandleCollisionBall(Game *game, Ball *ball, float delta)
 {
-	Player* player = &game->player;
+	Player *player = &game->player;
 	bool ball_collided_with_player = CheckCollisionCircleRec(ball->position, ball->radius, GetPlayerRect(player));
-	player->tint = (Color[]) {GREEN, WHITE} [ball_collided_with_player];
+	player->tint = (Color[]){GREEN, WHITE}[ball_collided_with_player];
 
 	if (ball_collided_with_player && ball->velocity.y > 0)
 	{
 		ball->velocity.y *= -1;
 		ball->position = VectorSum(ball->position, VectorScaled(ball->velocity, delta));
-		
+
 		CameraAddTrauma(&game->camera_manager, 0.4);
 
 		printf("[PLAYER HIT BALL]\n");
 	}
 
-	Brick* it = (Brick*)(game->board.bricks);
+	Brick *it = (Brick *)(game->board.bricks);
 
 	int brick_ct = 0;
 
 	while (brick_ct++ < BOARD_ROW * BOARD_COL)
 	{
-		Brick* brick = it++;
+		Brick *brick = it++;
 
 		if (IsBrickDestroyed(brick))
 		{
@@ -216,53 +203,50 @@ void HandleCollisionBall(Game* game, Ball* ball, float delta)
 
 			PlaySFXRandomize(&game->sound_manager, BALL_BRICK_COLLISION);
 
-			AddParticleGroup(&game->particle_manager, 
-				(Particle) {
-					.type = CIRCLE,
+			AddParticleGroup(&game->particle_manager,
+											 (Particle){
+													 .type = CIRCLE,
 
-					.position = ball->position,
-					// .position = VectorDif(ball->position, VectorScaled(direction, 5.0)),
-					.base_size = 3,
-					.color = BLUE,
-					.lifetime = 2.0,
-					.damping = 0.7,
-					.size_easing = EASE_CIRCLE4,
-				},
-				10,
-				direction
-			);
+													 .position = ball->position,
+													 // .position = VectorDif(ball->position, VectorScaled(direction, 5.0)),
+													 .base_size = 3,
+													 .color = BLUE,
+													 .lifetime = 2.0,
+													 .damping = 0.7,
+													 .size_easing = EASE_CIRCLE4,
+											 },
+											 10,
+											 direction);
 
-			if (!InRange(ball->position.x, brick->position.x, brick->position.x + BRICK_WIDTH)
-				|| InRange(ball->position.y, brick->position.y, brick->position.y + BRICK_HEIGHT))
+			if (!InRange(ball->position.x, brick->position.x, brick->position.x + BRICK_WIDTH) || InRange(ball->position.y, brick->position.y, brick->position.y + BRICK_HEIGHT))
 			{
 				ball->velocity.x *= -1;
 			}
 			else
 				ball->velocity.y *= -1;
-			
+
 			ball->position = VectorSum(ball->position, VectorScaled(ball->velocity, delta));
 
 			brick->remainingHp -= 1;
 
 			if (brick->remainingHp == 0)
 			{
-				AddParticleGroup(&game->particle_manager, 
-					(Particle) {
-						.type = SQUARE,
+				AddParticleGroup(&game->particle_manager,
+												 (Particle){
+														 .type = SQUARE,
 
-						.position = brick->position,
-						.base_size = 10,
-						.color = RED,
-						.lifetime = 2.0,
-						.damping = 0.7,
-						.immunity_duration = 1.0,
-						.size_easing = EASE_CIRCLE4,
+														 .position = brick->position,
+														 .base_size = 10,
+														 .color = RED,
+														 .lifetime = 2.0,
+														 .damping = 0.7,
+														 .immunity_duration = 1.0,
+														 .size_easing = EASE_CIRCLE4,
 
-					},
-					4,
-					direction
-				);
-	
+												 },
+												 4,
+												 direction);
+
 				AddSpeedToBall(ball, 10);
 			}
 
