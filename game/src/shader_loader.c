@@ -3,13 +3,18 @@
 
 #define GLSL_VERSION 330
 
+#ifndef __SHADER_LOADER
+#define __SHADER_LOADER
+
 typedef struct ShaderLoader
 {
-	const char *base_frag_shader_filename;
-	const char *base_vertex_shader_filename;
+	const char *fragment_filename;
+	const char *vertex_filename;
 
-	Shader base_shader;
-	Texture2D base_texture;
+	bool use_vertex;
+	bool use_frag;
+
+	Shader shader;
 
 } ShaderLoader;
 
@@ -22,22 +27,29 @@ static void SetShaderParam(Shader *shader, const char *param_name, void *param_p
 
 static void InitShaderLoader(ShaderLoader *shader_loader)
 {
-	shader_loader->base_vertex_shader_filename = "game/shaders/base.vs";
-	shader_loader->base_frag_shader_filename = "game/shaders/base.fs";
-	shader_loader->base_shader = LoadShader(0, TextFormat(shader_loader->base_frag_shader_filename, GLSL_VERSION));
+	if (!shader_loader->use_vertex && !shader_loader->use_frag)
+		return;
 
-	shader_loader->base_texture = LoadTexture("game/resources/textures/raylib_64x64.png");
+	shader_loader->shader = LoadShader(
+			(shader_loader->use_vertex) ? shader_loader->vertex_filename : 0,
+			(shader_loader->use_frag) ? shader_loader->fragment_filename : 0);
 
-	float color_hint[4] = {1.0f, 1.0f, 0.0f, 1.0f};
-	SetShaderParam(&shader_loader->base_shader, "color_hint", color_hint, SHADER_UNIFORM_VEC4);
+	// float color_hint[4] = {1.0f, 1.0f, 0.0f, 1.0f};
+	// SetShaderParam(&shader_loader->base_shader, "color_hint", color_hint, SHADER_UNIFORM_VEC4);
 }
 
-static void DrawShader(ShaderLoader *shader_loader)
+static void InitShaderMode(ShaderLoader *shader_loader)
 {
-	BeginShaderMode(shader_loader->base_shader);
-	{
-		DrawTexture(shader_loader->base_texture, 500, 500, BLANK);
-		// DrawRectangle(500, 500, 300, 300, BLANK);
-	}
-	EndShaderMode();
+	// assert(shader_loader->use_vertex || shader_loader->use_frag);
+	if (shader_loader->use_vertex || shader_loader->use_frag)
+		BeginShaderMode(shader_loader->shader);
 }
+
+static void FinishShaderMode(ShaderLoader *shader_loader)
+{
+	// assert(shader_loader->use_vertex || shader_loader->use_frag);
+	if (shader_loader->use_vertex || shader_loader->use_frag)
+		EndShaderMode();
+}
+
+#endif

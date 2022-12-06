@@ -1,10 +1,9 @@
-#include "utils.c"
 #include "player.c"
 #include "board.c"
 #include "ball.c"
-#include "geo_utils.c"
+#include "utils/geo_utils.c"
 
-#include "particle_manager.c"
+#include "particles/particle_manager.c"
 #include "sound.c"
 #include "camera.c"
 #include "shader_loader.c"
@@ -34,6 +33,7 @@ static void InitGame(Game *game)
 	game->frame = 0;
 	ResetPlayerPosition(&(game->player));
 	InitPlayer(&game->player);
+	LoadPlayerTexture(&game->player, "game/resources/textures/64x64_white.png");
 	InitBoard(&(game->board), (Vector2){200, 100});
 	InitParticleManager(&game->particle_manager, PARTICLE_MANAGER_STARTING_CAPACITY);
 	InitSoundManager(&game->sound_manager);
@@ -102,8 +102,6 @@ static void DrawGame(Game *game, float delta)
 	// DRAW PARTICLES
 	DrawParticleManager(&game->particle_manager);
 	EndMode2D();
-
-	DrawShader(&game->shader_loader);
 }
 
 static void HandleCollisions(Game *game, float delta)

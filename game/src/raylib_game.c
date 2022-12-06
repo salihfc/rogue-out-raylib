@@ -16,7 +16,7 @@
 #include "raylib.h"
 #include "game.c"
 #include "input.c"
-#include "draw_utils.c"
+#include "utils/draw_utils.c"
 
 #define DELTA (0.0166666666f)
 

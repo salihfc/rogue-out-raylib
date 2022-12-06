@@ -1,25 +1,22 @@
 #include "raylib.h"
-#include "utils.c"
+#include "utils/utils.c"
 #include "assert.h"
 
-typedef
-struct Range
+typedef struct Range
 {
 	float min;
 	float max;
 } Range;
 
-typedef
-enum {
+typedef enum
+{
 	UNIFORM = 0,
 	NORMAL,
 
 	DISTRIBUTION_COUNT
 } Distribution;
 
-
-static
-float GetRandomInRange(Range range, Distribution dist)
+static float GetRandomInRange(Range range, Distribution dist)
 {
 	switch (dist)
 	{
@@ -34,7 +31,7 @@ float GetRandomInRange(Range range, Distribution dist)
 		float r2 = GetRandomFloat(0.0, sq_root);
 		return range.min + r1 * r2;
 		break;
-	
+
 	default:
 		break;
 	}

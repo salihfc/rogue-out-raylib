@@ -1,16 +1,16 @@
 #include <assert.h>
 
 #include "raylib.h"
-#include "geo_utils.c"
-#include "easings.c"
-
+#include "../utils/geo_utils.c"
+#include "../animation/easings.c"
 
 #ifndef __PARTICLE
 #define __PARTICLE
 
 static const float PARTICLE_IMMUNITY = 0.2;
 
-typedef enum {
+typedef enum
+{
     PARTICLE_NONE = -1,
     CIRCLE = 0,
     SQUARE = 1,
@@ -18,8 +18,7 @@ typedef enum {
     PARTICLE_TYPE_COUNT
 } ParticleType;
 
-typedef
-struct Particle
+typedef struct Particle
 {
     ParticleType type;
 
@@ -44,22 +43,17 @@ struct Particle
 
 } Particle;
 
-
-static
-bool IsParticleActive(Particle* particle)
+static bool IsParticleActive(Particle *particle)
 {
     return particle->life > 0.0;
 }
 
-static
-bool IsParticleImmune(Particle* particle)
+static bool IsParticleImmune(Particle *particle)
 {
     return (particle->lifetime - particle->life) < particle->immunity_duration;
 }
 
-
-static
-void MoveParticle(Particle* particle, float delta)
+static void MoveParticle(Particle *particle, float delta)
 {
     particle->position = VectorSum(particle->position, VectorScaled(particle->velocity, delta));
 
@@ -67,9 +61,7 @@ void MoveParticle(Particle* particle, float delta)
     particle->velocity = VectorScaled(particle->velocity, damp);
 }
 
-
-static
-void TickParticle(Particle* particle, float delta)
+static void TickParticle(Particle *particle, float delta)
 {
     MoveParticle(particle, delta);
 
@@ -80,9 +72,7 @@ void TickParticle(Particle* particle, float delta)
     particle->size = (1 - apply_easing(particle->size_easing, particle->life_t)) * particle->base_size;
 }
 
-
-static
-void DrawParticle(Particle* particle)
+static void DrawParticle(Particle *particle)
 {
     if (particle->size < 0.01)
         return;
@@ -105,11 +95,10 @@ void DrawParticle(Particle* particle)
     case SQUARE:
         DrawRectangleV(final_position, (Vector2){final_size, final_size}, final_color);
         break;
-    
+
     default:
         break;
     }
 }
-
 
 #endif

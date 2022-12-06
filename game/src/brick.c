@@ -1,49 +1,38 @@
 #include "raylib.h"
-#include "geo_utils.c"
+#include "utils/geo_utils.c"
 
 static const int BRICK_WIDTH = 70;
 static const int BRICK_HEIGHT = 30;
 
-typedef
-struct
+typedef struct
 {
     int remainingHp;
     Vector2 position;
 
 } Brick;
 
-static
-Rectangle GetBrickRect(Brick* brick)
+static Rectangle GetBrickRect(Brick *brick)
 {
-    return (Rectangle) {
+    return (Rectangle){
         brick->position.x, brick->position.y,
-        BRICK_WIDTH, BRICK_HEIGHT
-    };
+        BRICK_WIDTH, BRICK_HEIGHT};
 }
 
-
-static
-Vector2 GetBrickCenter(Brick* brick)
+static Vector2 GetBrickCenter(Brick *brick)
 {
     return VectorSum(
         brick->position,
         VectorScaled(
             (Vector2){BRICK_WIDTH, BRICK_HEIGHT},
-            0.5
-        )
-    );
+            0.5));
 }
 
-
-static
-bool IsBrickDestroyed(Brick* brick)
+static bool IsBrickDestroyed(Brick *brick)
 {
     return brick->remainingHp <= 0;
 }
 
-
-static
-void DrawBrick(Brick* brick)
+static void DrawBrick(Brick *brick)
 {
     if (IsBrickDestroyed(brick))
         return;

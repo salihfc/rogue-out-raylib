@@ -1,10 +1,9 @@
 #include "raylib.h"
-#include "range.c"
+#include "../range.c"
+#include "../utils/geo_utils.c"
 #include "particle_manager.c"
-#include "geo_utils.c"
 
-typedef 
-struct ParticleEmitter
+typedef struct ParticleEmitter
 {
 	float emission_per_second;
 	float particle_per_emission;
@@ -19,7 +18,7 @@ struct ParticleEmitter
 
 	Range spread_angle;
 	Distribution spread_distribution;
-	
+
 	ParticleManager particle_manager;
 	Vector2 offset_from_parent;
 
@@ -28,9 +27,7 @@ struct ParticleEmitter
 	ParticleType particle_type;
 } ParticleEmitter;
 
-
-static
-void InitParticleEmitter(ParticleEmitter* emitter)
+static void InitParticleEmitter(ParticleEmitter *emitter)
 {
 	InitParticleManager(&emitter->particle_manager, 128);
 	emitter->emit_frequency = 1.0f / emitter->emission_per_second;
@@ -39,34 +36,28 @@ void InitParticleEmitter(ParticleEmitter* emitter)
 	printf("Init Particle emitter with f:[%f]\n", emitter->emit_frequency);
 }
 
-
-static
-void _EmitterEmit(ParticleEmitter* emitter, Vector2 parent_position)
+static void _EmitterEmit(ParticleEmitter *emitter, Vector2 parent_position)
 {
 	for (int particle_idx = 0; particle_idx < emitter->particle_per_emission; particle_idx++)
 	{
-		AddParticle(&emitter->particle_manager, 
-			(Particle) {
-				.type = emitter->particle_type,
-				.lifetime = GetRandomInRange(emitter->lifetime, UNIFORM),
-				.base_size = GetRandomInRange(emitter->size, UNIFORM),
-				.color = Fade(emitter->base_color, GetRandomInRange(emitter->alpha, UNIFORM)),
+		AddParticle(&emitter->particle_manager,
+								(Particle){
+										.type = emitter->particle_type,
+										.lifetime = GetRandomInRange(emitter->lifetime, UNIFORM),
+										.base_size = GetRandomInRange(emitter->size, UNIFORM),
+										.color = Fade(emitter->base_color, GetRandomInRange(emitter->alpha, UNIFORM)),
 
-				.velocity = VectorScaled(AngleToVector(GetRandomInRange(emitter->spread_angle, emitter->spread_distribution)), GetRandomInRange(emitter->speed, UNIFORM)),
-				.position = VectorSum(parent_position, emitter->offset_from_parent),
+										.velocity = VectorScaled(AngleToVector(GetRandomInRange(emitter->spread_angle, emitter->spread_distribution)), GetRandomInRange(emitter->speed, UNIFORM)),
+										.position = VectorSum(parent_position, emitter->offset_from_parent),
 
-				.damping = 0.7,
-				.immunity_duration = 1.0,
-				.size_easing = EASE_CIRCLE4,
-			}
-		);
+										.damping = 0.7,
+										.immunity_duration = 1.0,
+										.size_easing = EASE_CIRCLE4,
+								});
 	}
-
 }
 
-
-static
-void TickParticleEmitter(ParticleEmitter* emitter, float delta, Vector2 parent_position)
+static void TickParticleEmitter(ParticleEmitter *emitter, float delta, Vector2 parent_position)
 {
 	// Movement Handled by manager
 	TickParticleManager(&emitter->particle_manager, delta);
@@ -80,14 +71,12 @@ void TickParticleEmitter(ParticleEmitter* emitter, float delta, Vector2 parent_p
 	if (emitter->timer >= emitter->emit_frequency)
 	{
 		emitter->timer = 0;
-		// Emit 
+		// Emit
 		_EmitterEmit(emitter, parent_position);
 	}
 }
 
-
-static
-void DrawParticleEmitter(ParticleEmitter* emitter)
+static void DrawParticleEmitter(ParticleEmitter *emitter)
 {
 	DrawParticleManager(&emitter->particle_manager);
 }
