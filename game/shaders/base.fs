@@ -18,6 +18,26 @@ uniform vec4 border_color;
 // Output fragment color
 out vec4 finalColor;
 
+float sm(float t)
+{
+    return (3.0 * t * t) - (2.0 * t * t * t);
+}
+
+float clamp(float v, float mn, float mx)
+{
+    return max(mn, min(mx, v));
+}
+
+float sm_w(float start, float end, float value)
+{
+    return clamp(((value-start) / (end-start)), 0.0, 1.0);
+}
+
+float smoothstep(float start, float end, float value)
+{
+    return start + (end - start) * sm_w(start, end, value);
+}
+
 float mix(float a, float b, float w)
 {
     return a + (b - a) * w;
@@ -59,7 +79,9 @@ void main()
     vec2 uv = fragTexCoord;
     vec2 fragCoord = vec2(uv.x * body_size.x, uv.y * body_size.y);
     float fragDist = dist_to_edges(fragCoord, body_size);
-    color.rgb = (fragDist < border_thickness) ? border_color.rgb : color.rgb;
+    // color.rgb = (fragDist < border_thickness) ? border_color.rgb : color.rgb;
+    float w = sm_w(border_thickness, border_thickness - 10.0, fragDist);
+    color.rgb = mix(color.rgb, border_color.rgb, w);
     finalColor = color;
 }
 

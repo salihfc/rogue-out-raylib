@@ -33,7 +33,7 @@ static void InitPlayer(Player *player)
     InitShaderLoader(&(player->shader_loader));
     SetShaderVec4(player->shader_loader.shader, "color_hint", (Vector4){1.0f, 1.0f, 1.0f, 0.5f});
     SetShaderVec4(player->shader_loader.shader, "border_color", (Vector4){0.0f, 0.0f, 1.0f, 1.0f});
-    SetShaderFloat((player->shader_loader.shader), "border_thickness", 10.0f);
+    SetShaderFloat((player->shader_loader.shader), "border_thickness", 20.0f);
 
     player->left_emitter =
         (ParticleEmitter){

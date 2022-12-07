@@ -208,7 +208,7 @@ static void HandleCollisionBall(Game *game, Ball *ball, float delta)
 													 .position = ball->position,
 													 // .position = VectorDif(ball->position, VectorScaled(direction, 5.0)),
 													 .base_size = 3,
-													 .color = BLUE,
+													 .color = WHITE,
 													 .lifetime = 2.0,
 													 .damping = 0.7,
 													 .size_easing = EASE_CIRCLE4,
