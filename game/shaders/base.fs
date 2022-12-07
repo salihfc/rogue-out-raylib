@@ -9,6 +9,10 @@ uniform sampler2D texture0;
 uniform vec4 colDiffuse;
 
 uniform vec4 color_hint;
+uniform vec2 body_size;
+
+uniform float border_thickness;
+uniform vec4 border_color;
 // uniform vec2 gi_direction;
 
 // Output fragment color
@@ -39,16 +43,23 @@ float abs(float x)
     return (x > 0) ? x : -x;
 }
 
+float dist_to_edges(vec2 frag, vec2 text_size)
+{
+    return min(
+        min(frag.x, text_size.x - frag.x),
+        min(frag.y, text_size.y - frag.y)
+    );
+}
+
 void main()
 {
     vec4 color = texture(texture0, fragTexCoord);
     color.rgb = mix(color.rgb, color_hint.rgb, 1.0 - color_hint.a);
 
     vec2 uv = fragTexCoord;
-    float dist = max(abs(uv.x - 0.5), abs(uv.y - 0.5));
-    color.rgb *= (dist > 0.3) ? 0.3 : 1.0;
-    // color.rg = fragTexCoord.xy;
-    // color.b = 0.0;
+    vec2 fragCoord = vec2(uv.x * body_size.x, uv.y * body_size.y);
+    float fragDist = dist_to_edges(fragCoord, body_size);
+    color.rgb = (fragDist < border_thickness) ? border_color.rgb : color.rgb;
     finalColor = color;
 }
 

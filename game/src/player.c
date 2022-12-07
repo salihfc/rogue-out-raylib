@@ -31,11 +31,9 @@ static void InitPlayer(Player *player)
 
     player->tint = WHITE;
     InitShaderLoader(&(player->shader_loader));
-    float color_hint[4] = {1.0f, 1.0f, 1.0f, 0.5f};
-    SetShaderParam(&(player->shader_loader.shader), "color_hint", color_hint, SHADER_UNIFORM_VEC4);
-
-    // float gi_dir[2] = {1.0f, 0.0f};
-    // SetShaderParam(&(player->shader_loader.shader), "gi_direction", gi_dir, SHADER_UNIFORM_VEC2);
+    SetShaderVec4(player->shader_loader.shader, "color_hint", (Vector4){1.0f, 1.0f, 1.0f, 0.5f});
+    SetShaderVec4(player->shader_loader.shader, "border_color", (Vector4){0.0f, 0.0f, 1.0f, 1.0f});
+    SetShaderFloat((player->shader_loader.shader), "border_thickness", 10.0f);
 
     player->left_emitter =
         (ParticleEmitter){
@@ -81,12 +79,20 @@ static void LoadPlayerTexture(Player *player, const char *texture_filename)
     player->texture = LoadTexture(texture_filename);
 }
 
+static void SetPlayerSize(Player *player, Vector2 size)
+{
+    player->body.size = size;
+    float body_size[2] = {size.x, size.y};
+    SetShaderParam(player->shader_loader.shader, "body_size", body_size, SHADER_UNIFORM_VEC2);
+}
+
 static void ResetPlayerPosition(Player *player)
 {
     player->body.position = DEFAULT_POS;
     player->body.velocity = (Vector2){0, 0};
     player->body.damping_factor = DEFAULT_DAMP;
-    player->body.size = DEFAULT_SIZE;
+    // player->body.size = DEFAULT_SIZE;
+    SetPlayerSize(player, DEFAULT_SIZE);
 }
 
 static void ApplyForceToPlayer(Player *player, Vector2 force)
@@ -120,11 +126,6 @@ static void DrawPlayer(Player *player)
     DrawParticleEmitter(&player->right_emitter);
 
     InitShaderMode(&player->shader_loader);
-    // DrawRectangleV(player->body.position, player->body.size, player->tint);
-    // DrawRectangleV(player->body.position, player->body.size, player->tint);
-    // DrawTexture(player->texture, player->body.position.x, player->body.position.y, player->tint);
-    // DrawTextureEx(player->texture, VectorDif(player->body.position, (Vector2){0.0, 200.0}), 0.0, player->body.size.x / 64.0, player->tint);
-    // DrawTextureTiled(player->texture, (Rectangle){0, 0, 64, 64}, (Rectangle){player->body.position.x, player->body.position.y, player->body.size.x, player->body.size.y}, Vector2Zero(), 0.0, )
     DrawTextureQuad(player->texture, Vector2One(), Vector2Zero(), GetPlayerRect(player), player->tint);
     FinishShaderMode(&player->shader_loader);
 }

@@ -31,8 +31,8 @@ static void HandleCollisions(Game *game, float delta);
 static void InitGame(Game *game)
 {
 	game->frame = 0;
-	ResetPlayerPosition(&(game->player));
 	InitPlayer(&game->player);
+	ResetPlayerPosition(&(game->player));
 	LoadPlayerTexture(&game->player, "game/resources/textures/64x64_white.png");
 	InitBoard(&(game->board), (Vector2){200, 100});
 	InitParticleManager(&game->particle_manager, PARTICLE_MANAGER_STARTING_CAPACITY);
