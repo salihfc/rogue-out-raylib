@@ -127,7 +127,7 @@ void main()
     for (int i = 0; i < light_count; i++)
     {
         float distance_to_light = dist(fragCoord, light_pos[i]);
-				float light_denom = distance_to_light * distance_to_light * distance_to_light;
+				float light_denom = pow(distance_to_light, 4); 
 				// pow(distance_to_light, 1.75);
         float cont = light_intensity[i] / (light_denom);
         total_cont += cont;
