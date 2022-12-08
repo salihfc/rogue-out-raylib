@@ -165,16 +165,6 @@ static void Draw(Game *game, Camera2D *camera, float delta)
 		DrawGame(game, delta);
 	}
 
-	BeginMode2D(*camera);
-	{
-		DrawCircleV(
-				(Vector2){0, 0},
-				// (Vector2) {screenWidth / 2, screenHeight / 2},
-				100.0,
-				BLACK);
-	}
-	EndMode2D();
-
 	// DRAW DEBUG
 	DrawFPS(10, 10);
 	DrawInt(game->frame / 60, (Vector2){10, 50}, 32, RED);

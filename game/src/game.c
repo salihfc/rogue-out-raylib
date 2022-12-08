@@ -8,9 +8,14 @@
 #include "camera.c"
 #include "shader_loader.c"
 #include "light/light_manager.c"
+#include "background.c"
 
 #define BALL_COUNT 5
 #define BALL_SIZE 5
+
+static const char *BACKGROUND_TEXTURE_PATH = "game/resources/textures/64x64_white.png";
+static const char *PLAYER_TEXTURE_PATH = "game/resources/textures/64x64_white.png";
+static const Color BACKGROUND_COLOR_TINT = (Color){25, 25, 50, 200};
 
 typedef struct
 {
@@ -24,6 +29,7 @@ typedef struct
 	CameraManager camera_manager;
 	ShaderLoader shader_loader;
 	LightManager light_manager;
+	Background background;
 
 } Game;
 
@@ -35,12 +41,19 @@ static void InitGame(Game *game)
 	game->frame = 0;
 	InitPlayer(&game->player);
 	ResetPlayerPosition(&(game->player));
-	LoadPlayerTexture(&game->player, "game/resources/textures/64x64_white.png");
+	LoadPlayerTexture(&game->player, PLAYER_TEXTURE_PATH);
 	InitBoard(&(game->board), (Vector2){200, 100});
 	InitParticleManager(&game->particle_manager, PARTICLE_MANAGER_STARTING_CAPACITY);
 	InitSoundManager(&game->sound_manager);
 	InitShaderLoader(&game->shader_loader);
 	InitLightManager(&game->light_manager);
+
+	game->background = (Background){
+			.size = (Vector2){GetScreenWidth(), GetScreenHeight()},
+			.texture = LoadTexture(BACKGROUND_TEXTURE_PATH)};
+	InitBackground(&game->background);
+
+	SetBackgroundTint(&game->background, BACKGROUND_COLOR_TINT);
 
 	{
 		float screenWidth = 1.0f * GetScreenWidth();
@@ -61,7 +74,7 @@ static void InitGame(Game *game)
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
 		ball->light = GetNewLight(&game->light_manager);
-		InitBall(ball, (Vector2){200 + 50.0 * i, 100}, (Vector2){300, 120}, BALL_SIZE);
+		InitBall(ball, (Vector2){200 + 50.0 * i, 100}, GetRandomVector2(500.0), BALL_SIZE);
 		ball++;
 	}
 }
@@ -87,12 +100,15 @@ static void UpdateGame(Game *game, float delta)
 		}
 	}
 
+	SetShaderLights(&game->light_manager, game->background.shader_loader.shader);
+
 	HandleCollisions(game, delta);
 }
 
 static void DrawGame(Game *game, float delta)
 {
 	BeginBlendMode(BLEND_ALPHA);
+	DrawBackground(&game->background);
 	BeginMode2D(GetModifiedCamera(&game->camera_manager));
 
 	// DRAW PLAYER

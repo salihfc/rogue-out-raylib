@@ -65,9 +65,6 @@ static void InitShaderLoader(ShaderLoader *shader_loader)
 	shader_loader->shader = LoadShader(
 			(shader_loader->use_vertex) ? shader_loader->vertex_filename : 0,
 			(shader_loader->use_frag) ? shader_loader->fragment_filename : 0);
-
-	// float color_hint[4] = {1.0f, 1.0f, 0.0f, 1.0f};
-	// SetShaderParam(&shader_loader->base_shader, "color_hint", color_hint, SHADER_UNIFORM_VEC4);
 }
 
 static void InitShaderMode(ShaderLoader *shader_loader)

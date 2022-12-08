@@ -1,34 +1,5 @@
 #version 330
 
-// Input vertex attributes (from vertex shader)
-in vec2 fragTexCoord;
-in vec4 fragColor;
-
-// Input uniform values
-uniform sampler2D texture0;
-uniform vec4 colDiffuse;
-
-uniform vec4 color_hint;
-uniform vec2 body_size;
-uniform vec2 object_top_left;
-
-uniform float border_thickness;
-uniform vec4 border_color;
-uniform vec2 gi_direction;
-
-// Light uniforms
-uniform int light_count;
-uniform vec2 light_pos[16];
-uniform float light_intensity[16];
-
-// Output fragment color
-out vec4 finalColor;
-
-float dot(vec2 a, vec2 b)
-{
-    return a.x * b.x + a.y * b.y;
-}
-
 float sm(float t)
 {
     return (3.0 * t * t) - (2.0 * t * t * t);
@@ -66,21 +37,6 @@ vec2 diff(vec2 a, vec2 b)
 {
     a.x -= b.x;
     a.y -= b.y;
-    return a;
-}
-
-vec2 sum(vec2 a, vec2 b)
-{
-    a.x += b.x;
-    a.y += b.y;
-    return a;
-}
-
-vec2 normalized(vec2 a)
-{
-    float l = length(a);
-    a.x /= l;
-    a.y /= l;
     return a;
 }
 
@@ -137,35 +93,49 @@ float round_corner(vec2 frag, vec2 texture_size, float corner_dist)
     return 1.0;
 }
 
+// Input vertex attributes (from vertex shader)
+in vec2 fragTexCoord;
+in vec4 fragColor;
+
+// Input uniform values
+uniform sampler2D texture0;
+uniform vec4 colDiffuse;
+
+uniform vec4 color_hint;
+uniform vec2 body_size;
+
+uniform float border_thickness;
+uniform vec4 border_color;
+// uniform vec2 gi_direction;
+
+// Output fragment color
+out vec4 finalColor;
+// Light uniforms
+uniform int light_count;
+uniform vec2 light_pos[16];
+uniform float light_intensity[16];
+
 void main()
 {
     vec4 color = texture(texture0, fragTexCoord);
-    color.rgb = mix(color.rgb, color_hint.rgb, 1.0 - color_hint.a);
-
-    vec2 uv = fragTexCoord;
+		color = color_hint;
+		vec2 uv = fragTexCoord;
     vec2 fragCoord = vec2(uv.x * body_size.x, uv.y * body_size.y);
-    float fragDist = dist_to_edges(fragCoord, body_size);
-    // color.rgb = (fragDist < border_thickness) ? border_color.rgb : color.rgb;
-    float w = sm_w(border_thickness + 5.0, border_thickness, fragDist);
-    color.rgb = mix(color.rgb, border_color.rgb, w);
-    color.a = round_corner(fragCoord, body_size, border_thickness * 2.);
 
-    float total_cont = 0.0;
+		float total_cont = 0.0;
+		float intensity_factor = 100.1;
     for (int i = 0; i < light_count; i++)
     {
-        float distance_to_light = dist(sum(fragCoord, object_top_left), light_pos[i]);
-        float cont = light_intensity[i] / (distance_to_light * distance_to_light);
+        float distance_to_light = dist(fragCoord, light_pos[i]);
+				float light_denom = distance_to_light * distance_to_light * distance_to_light;
+				// pow(distance_to_light, 1.75);
+        float cont = light_intensity[i] / (light_denom);
         total_cont += cont;
     }
 
-    color.rgb += min(0.2, total_cont / 1.0);
-    // color.r = pow(color.r, 1.0 - total_cont);
-    // color.g = pow(color.g, 1.0 - total_cont);
-    // color.b = pow(color.b, 1.0 - total_cont);
-    // color.r = pow(color.r, total_cont);
-    // vec2 dir_from_center = normalized(diff(fragCoord, body_size / 2.0));
-    // float k = (1.0 - dot(dir_from_center, gi_direction));
-    // color.a *= k;
+		total_cont *= intensity_factor;
+		color.rgb += min(total_cont, 0.1);
+
     finalColor = color;
 }
 

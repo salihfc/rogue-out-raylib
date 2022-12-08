@@ -5,7 +5,7 @@
 static const int BRICK_WIDTH = 70;
 static const int BRICK_HEIGHT = 30;
 static const float BRICK_BORDER_SIZE = 2.0;
-static const Color BRICK_BORDER_COLOR = (Color){100, 100, 100, 0};
+static const Color BRICK_BORDER_COLOR = (Color){255, 100, 100, 0};
 
 typedef struct
 {
