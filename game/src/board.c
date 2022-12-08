@@ -30,6 +30,7 @@ static void InitBoard(Board *board, Vector2 board_top_left)
 					(Vector2){
 							col * BRICK_WIDTH + col * PAD_COL,
 							row * BRICK_HEIGHT + row * PAD_ROW});
+			InitBrick(brick);
 		}
 	}
 }

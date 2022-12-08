@@ -80,6 +80,7 @@ static void UpdateGame(Game *game, float delta)
 
 static void DrawGame(Game *game, float delta)
 {
+	BeginBlendMode(BLEND_ALPHA);
 	BeginMode2D(GetModifiedCamera(&game->camera_manager));
 
 	// DRAW PLAYER
@@ -102,6 +103,7 @@ static void DrawGame(Game *game, float delta)
 	// DRAW PARTICLES
 	DrawParticleManager(&game->particle_manager);
 	EndMode2D();
+	EndBlendMode();
 }
 
 static void HandleCollisions(Game *game, float delta)
@@ -225,9 +227,9 @@ static void HandleCollisionBall(Game *game, Ball *ball, float delta)
 
 			ball->position = VectorSum(ball->position, VectorScaled(ball->velocity, delta));
 
-			brick->remainingHp -= 1;
+			DealDamageToBrick(brick, 1);
 
-			if (brick->remainingHp == 0)
+			if (IsBrickDestroyed(brick))
 			{
 				AddParticleGroup(&game->particle_manager,
 												 (Particle){

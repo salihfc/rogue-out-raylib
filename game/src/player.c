@@ -10,6 +10,8 @@ static const Vector2 DEFAULT_POS = (Vector2){568.0, 900.0};
 static const Vector2 DEFAULT_SIZE = (Vector2){200.0, 40.0};
 static const float DEFAULT_SPEED = 300.0;
 static const float DEFAULT_DAMP = 0.9;
+static const float PLAYER_BORDER_THICKNESS = 5.0f;
+static const Color PLAYER_BORDER_COLOR = BLUE;
 
 typedef struct Player
 {
@@ -32,8 +34,8 @@ static void InitPlayer(Player *player)
     player->tint = WHITE;
     InitShaderLoader(&(player->shader_loader));
     SetShaderVec4(player->shader_loader.shader, "color_hint", (Vector4){1.0f, 1.0f, 1.0f, 0.5f});
-    SetShaderVec4(player->shader_loader.shader, "border_color", (Vector4){0.0f, 0.0f, 1.0f, 1.0f});
-    SetShaderFloat((player->shader_loader.shader), "border_thickness", 20.0f);
+    SetShaderVec4(player->shader_loader.shader, "border_color", ColorNormalize(PLAYER_BORDER_COLOR));
+    SetShaderFloat((player->shader_loader.shader), "border_thickness", PLAYER_BORDER_THICKNESS);
 
     player->left_emitter =
         (ParticleEmitter){
@@ -82,8 +84,7 @@ static void LoadPlayerTexture(Player *player, const char *texture_filename)
 static void SetPlayerSize(Player *player, Vector2 size)
 {
     player->body.size = size;
-    float body_size[2] = {size.x, size.y};
-    SetShaderParam(player->shader_loader.shader, "body_size", body_size, SHADER_UNIFORM_VEC2);
+    SetShaderVec2(player->shader_loader.shader, "body_size", size);
 }
 
 static void ResetPlayerPosition(Player *player)
