@@ -37,7 +37,6 @@ static void InitBoard(Board *board, Vector2 board_top_left)
 
 static void DrawBoard(Board *board)
 {
-
 	for (int row = 0; row < BOARD_ROW; row++)
 	{
 		for (int col = 0; col < BOARD_COL; col++)

@@ -7,6 +7,7 @@
 #include "sound.c"
 #include "camera.c"
 #include "shader_loader.c"
+#include "light/light_manager.c"
 
 #define BALL_COUNT 5
 #define BALL_SIZE 5
@@ -22,6 +23,7 @@ typedef struct
 	SoundManager sound_manager;
 	CameraManager camera_manager;
 	ShaderLoader shader_loader;
+	LightManager light_manager;
 
 } Game;
 
@@ -38,6 +40,7 @@ static void InitGame(Game *game)
 	InitParticleManager(&game->particle_manager, PARTICLE_MANAGER_STARTING_CAPACITY);
 	InitSoundManager(&game->sound_manager);
 	InitShaderLoader(&game->shader_loader);
+	InitLightManager(&game->light_manager);
 
 	{
 		float screenWidth = 1.0f * GetScreenWidth();
@@ -57,6 +60,7 @@ static void InitGame(Game *game)
 
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
+		ball->light = GetNewLight(&game->light_manager);
 		InitBall(ball, (Vector2){200 + 50.0 * i, 100}, (Vector2){300, 120}, BALL_SIZE);
 		ball++;
 	}
@@ -73,6 +77,14 @@ static void UpdateGame(Game *game, float delta)
 	{
 		TickBall(ball, delta);
 		ball++;
+	}
+
+	for (int row = 0; row < BOARD_ROW; row++)
+	{
+		for (int col = 0; col < BOARD_COL; col++)
+		{
+			SetShaderLights(&game->light_manager, (game->board.bricks[row][col]).shader_loader.shader);
+		}
 	}
 
 	HandleCollisions(game, delta);

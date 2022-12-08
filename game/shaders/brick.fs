@@ -10,6 +10,7 @@ uniform vec4 colDiffuse;
 
 uniform vec4 color_hint;
 uniform vec2 body_size;
+uniform vec2 object_top_left;
 
 uniform float border_thickness;
 uniform vec4 border_color;
@@ -65,6 +66,13 @@ vec2 diff(vec2 a, vec2 b)
 {
     a.x -= b.x;
     a.y -= b.y;
+    return a;
+}
+
+vec2 sum(vec2 a, vec2 b)
+{
+    a.x += b.x;
+    a.y += b.y;
     return a;
 }
 
@@ -142,6 +150,12 @@ void main()
     color.rgb = mix(color.rgb, border_color.rgb, w);
     color.a = round_corner(fragCoord, body_size, border_thickness * 2.);
 
+    for (int i = 0; i < light_count; i++)
+    {
+        float distance_to_light = dist(sum(fragCoord, object_top_left), light_pos[i]);
+        float cont = light_intensity[i] / (distance_to_light * distance_to_light);
+        color += cont;
+    }
     // vec2 dir_from_center = normalized(diff(fragCoord, body_size / 2.0));
     // float k = (1.0 - dot(dir_from_center, gi_direction));
     // color.a *= k;

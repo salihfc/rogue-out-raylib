@@ -40,6 +40,23 @@ static void SetShaderFloat(Shader shader, const char *param_name, float param_va
 	SetShaderParam(shader, param_name, &param_value, SHADER_UNIFORM_FLOAT);
 }
 
+static void SetShaderInt(Shader shader, const char *param_name, int param_value)
+{
+	SetShaderParam(shader, param_name, &param_value, SHADER_UNIFORM_INT);
+}
+
+static void SetShaderVec2Array(Shader shader, const char *param_name, float *floatArray, int size)
+{
+	int loc = GetShaderLocation(shader, param_name);
+	SetShaderValueV(shader, loc, floatArray, SHADER_UNIFORM_VEC2, size);
+}
+
+static void SetShaderFloatArray(Shader shader, const char *param_name, float *floatArray, int size)
+{
+	int loc = GetShaderLocation(shader, param_name);
+	SetShaderValueV(shader, loc, floatArray, SHADER_UNIFORM_FLOAT, size);
+}
+
 static void InitShaderLoader(ShaderLoader *shader_loader)
 {
 	if (!shader_loader->use_vertex && !shader_loader->use_frag)

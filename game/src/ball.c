@@ -1,5 +1,8 @@
 #include "raylib.h"
 #include "utils/geo_utils.c"
+#include "light/light.c"
+
+static const float DEFAULT_BALL_LIGHT_INTENSITY = 1500.0;
 
 typedef struct
 {
@@ -8,6 +11,7 @@ typedef struct
     float radius;
 
     ParticleEmitter particle_emitter;
+    UniLight *light;
 } Ball;
 
 static void InitBall(Ball *ball, Vector2 position, Vector2 velocity, float radius)
@@ -15,6 +19,7 @@ static void InitBall(Ball *ball, Vector2 position, Vector2 velocity, float radiu
     ball->position = position;
     ball->velocity = velocity;
     ball->radius = radius;
+    ball->light->intensity = DEFAULT_BALL_LIGHT_INTENSITY;
 
     ball->particle_emitter =
         (ParticleEmitter){
@@ -73,4 +78,8 @@ static void TickBall(Ball *ball, float delta)
     MoveBall(ball, delta);
 
     TickParticleEmitter(&ball->particle_emitter, delta, ball->position);
+    if (ball->light)
+    {
+        ball->light->position = ball->position;
+    }
 }

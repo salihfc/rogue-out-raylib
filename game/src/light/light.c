@@ -1,8 +1,13 @@
 #include "raylib.h"
-#include "game/src/utils/geo_utils.c"
+#include "../utils/geo_utils.c"
 
-typedef struct Light
+#ifndef __UNI_LIGHT
+#define __UNI_LIGHT
+
+typedef struct UniLight
 {
 	Vector2 position;
 	float intensity;
-} Light;
+} UniLight;
+
+#endif
