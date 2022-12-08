@@ -5,7 +5,7 @@
 static const int BRICK_WIDTH = 70;
 static const int BRICK_HEIGHT = 30;
 static const float BRICK_BORDER_SIZE = 2.0;
-static const Color BRICK_BORDER_COLOR = WHITE;
+static const Color BRICK_BORDER_COLOR = (Color){245, 245, 245, 0};
 
 typedef struct
 {
@@ -37,10 +37,10 @@ static Color GetBrickColorFromHp(int hp)
     const int COLOR_COUNT = 4;
     assert(hp < COLOR_COUNT);
     return (Color[]){
-        Fade(WHITE, 0.0),
-        Fade(YELLOW, 0.0),
-        Fade(ORANGE, 0.0),
-        Fade(RED, 0.0),
+        Fade(WHITE, 0.4),
+        Fade(YELLOW, 0.3),
+        Fade(ORANGE, 0.2),
+        Fade(RED, 0.1),
     }[hp];
 }
 

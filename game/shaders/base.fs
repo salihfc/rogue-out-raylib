@@ -114,7 +114,8 @@ float round_corner(vec2 frag, vec2 texture_size, float corner_dist)
 void main()
 {
     vec4 color = texture(texture0, fragTexCoord);
-    color.rgb = mix(color.rgb, color_hint.rgb, 1.0 - color_hint.a);
+    // color.rgb = mix(color.rgb, color_hint.rgb, color_hint.a);
+    color = color_hint;
 
     vec2 uv = fragTexCoord;
     vec2 fragCoord = vec2(uv.x * body_size.x, uv.y * body_size.y);

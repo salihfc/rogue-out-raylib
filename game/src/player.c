@@ -31,9 +31,9 @@ static void InitPlayer(Player *player)
         .use_frag = true,
         .fragment_filename = "game/shaders/base.fs"};
 
-    player->tint = WHITE;
+    player->tint = GREEN;
     InitShaderLoader(&(player->shader_loader));
-    SetShaderVec4(player->shader_loader.shader, "color_hint", (Vector4){1.0f, 1.0f, 1.0f, 0.5f});
+    SetShaderVec4(player->shader_loader.shader, "color_hint", ColorNormalize(player->tint));
     SetShaderVec4(player->shader_loader.shader, "border_color", ColorNormalize(PLAYER_BORDER_COLOR));
     SetShaderFloat((player->shader_loader.shader), "border_thickness", PLAYER_BORDER_THICKNESS);
 
@@ -92,7 +92,6 @@ static void ResetPlayerPosition(Player *player)
     player->body.position = DEFAULT_POS;
     player->body.velocity = (Vector2){0, 0};
     player->body.damping_factor = DEFAULT_DAMP;
-    // player->body.size = DEFAULT_SIZE;
     SetPlayerSize(player, DEFAULT_SIZE);
 }
 

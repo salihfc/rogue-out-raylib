@@ -18,6 +18,7 @@
 		"stdio.h": "c",
 		"assert.h": "c",
 		"stdlib.h": "c",
-		"math.h": "c"
+		"math.h": "c",
+		"limits": "c"
 	}
 }
