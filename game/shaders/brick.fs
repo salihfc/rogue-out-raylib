@@ -13,10 +13,20 @@ uniform vec2 body_size;
 
 uniform float border_thickness;
 uniform vec4 border_color;
-// uniform vec2 gi_direction;
+uniform vec2 gi_direction;
+
+// Light uniforms
+uniform int light_count;
+uniform vec2 light_pos[16];
+uniform float light_intensity[16];
 
 // Output fragment color
 out vec4 finalColor;
+
+float dot(vec2 a, vec2 b)
+{
+    return a.x * b.x + a.y * b.y;
+}
 
 float sm(float t)
 {
@@ -55,6 +65,14 @@ vec2 diff(vec2 a, vec2 b)
 {
     a.x -= b.x;
     a.y -= b.y;
+    return a;
+}
+
+vec2 normalized(vec2 a)
+{
+    float l = length(a);
+    a.x /= l;
+    a.y /= l;
     return a;
 }
 
@@ -123,6 +141,10 @@ void main()
     float w = sm_w(border_thickness + 10.0, border_thickness, fragDist);
     color.rgb = mix(color.rgb, border_color.rgb, w);
     color.a = round_corner(fragCoord, body_size, border_thickness * 2.);
+
+    // vec2 dir_from_center = normalized(diff(fragCoord, body_size / 2.0));
+    // float k = (1.0 - dot(dir_from_center, gi_direction));
+    // color.a *= k;
     finalColor = color;
 }
 

@@ -27,22 +27,17 @@ static void SetShaderParam(Shader shader, const char *param_name, void *param_po
 
 static void SetShaderVec4(Shader shader, const char *param_name, Vector4 vec4)
 {
-	float p[4] = {vec4.x, vec4.y, vec4.z, vec4.w};
-	SetShaderParam(shader, param_name, p, SHADER_UNIFORM_VEC4);
+	SetShaderParam(shader, param_name, (float[4]){vec4.x, vec4.y, vec4.z, vec4.w}, SHADER_UNIFORM_VEC4);
 }
 
 static void SetShaderVec2(Shader shader, const char *param_name, Vector2 vec2)
 {
-	float p[2] = {vec2.x, vec2.y};
-	SetShaderParam(shader, param_name, p, SHADER_UNIFORM_VEC2);
+	SetShaderParam(shader, param_name, (float[2]){vec2.x, vec2.y}, SHADER_UNIFORM_VEC2);
 }
 
 static void SetShaderFloat(Shader shader, const char *param_name, float param_value)
 {
-	float *param_p = malloc(sizeof(float));
-	*param_p = param_value;
-	SetShaderParam(shader, param_name, param_p, SHADER_UNIFORM_FLOAT);
-	free(param_p);
+	SetShaderParam(shader, param_name, &param_value, SHADER_UNIFORM_FLOAT);
 }
 
 static void InitShaderLoader(ShaderLoader *shader_loader)

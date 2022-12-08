@@ -5,7 +5,7 @@
 static const int BRICK_WIDTH = 70;
 static const int BRICK_HEIGHT = 30;
 static const float BRICK_BORDER_SIZE = 2.0;
-static const Color BRICK_BORDER_COLOR = (Color){245, 245, 245, 0};
+static const Color BRICK_BORDER_COLOR = (Color){100, 100, 100, 0};
 
 typedef struct
 {
@@ -57,6 +57,7 @@ static void InitBrick(Brick *brick)
     SetShaderVec4(brick->shader_loader.shader, "border_color", ColorNormalize(BRICK_BORDER_COLOR));
     SetShaderFloat((brick->shader_loader.shader), "border_thickness", BRICK_BORDER_SIZE);
     SetShaderVec2(brick->shader_loader.shader, "body_size", (Vector2){GetBrickRect(brick).width, GetBrickRect(brick).height});
+    // SetShaderVec2(brick->shader_loader.shader, "gi_direction", (Vector2){0.0, -1.0});
 }
 
 static void DealDamageToBrick(Brick *brick, int damage)
