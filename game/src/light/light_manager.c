@@ -12,6 +12,13 @@ typedef struct LightManager
 	UniLight *lights;
 	int light_count;
 	int light_capacity;
+
+	float *light_position_array;
+	bool position_dirty;
+
+	float *light_intensity_array;
+	bool intensity_dirty;
+
 } LightManager;
 
 static void InitLightManager(LightManager *light_manager)
@@ -19,32 +26,54 @@ static void InitLightManager(LightManager *light_manager)
 	light_manager->light_capacity = STARTING_LIGHT_CAPACITY;
 	light_manager->lights = (UniLight *)MemAlloc(sizeof(UniLight) * light_manager->light_capacity);
 	light_manager->light_count = 0;
+	light_manager->position_dirty = false;
+	light_manager->intensity_dirty = false;
 }
 
 static UniLight *GetNewLight(LightManager *light_manager)
 {
 	assert(light_manager->light_capacity > light_manager->light_count); // cap control > todo: add expansion
+	light_manager->position_dirty = true;
+	light_manager->intensity_dirty = true;
 	return &light_manager->lights[light_manager->light_count++];
 }
 
 static float *GetLightPositionArray(LightManager *light_manager)
 {
-	float *light_position_array = (float *)MemAlloc(light_manager->light_count * 2 * sizeof(float));
-	for (int i = 0; i < light_manager->light_count; i++)
+	if (light_manager->position_dirty)
 	{
-		light_position_array[2 * i] = light_manager->lights[i].position.x;
-		light_position_array[2 * i + 1] = light_manager->lights[i].position.y;
+		if (light_manager->light_position_array)
+			light_manager->light_position_array = (float *)MemRealloc(light_manager->light_position_array, light_manager->light_count * 2 * sizeof(float));
+		else
+			light_manager->light_position_array = (float *)MemAlloc(light_manager->light_count * 2 * sizeof(float));
+
+		light_manager->position_dirty = false;
 	}
 
-	return light_position_array;
+	for (int i = 0; i < light_manager->light_count; i++)
+	{
+		light_manager->light_position_array[2 * i] = light_manager->lights[i].position.x;
+		light_manager->light_position_array[2 * i + 1] = light_manager->lights[i].position.y;
+	}
+
+	return light_manager->light_position_array;
 }
 
 static float *GetLightIntensityArray(LightManager *light_manager)
 {
-	float *light_intensity_array = (float *)MemAlloc(light_manager->light_count * sizeof(float));
+	if (light_manager->intensity_dirty)
+	{
+		if (light_manager->light_intensity_array)
+			light_manager->light_intensity_array = (float *)MemRealloc(light_manager->light_intensity_array, light_manager->light_count * sizeof(float));
+		else
+			light_manager->light_intensity_array = (float *)MemAlloc(light_manager->light_count * sizeof(float));
+
+		light_manager->intensity_dirty = false;
+	}
+
 	for (int i = 0; i < light_manager->light_count; i++)
-		light_intensity_array[i] = light_manager->lights[i].intensity;
-	return light_intensity_array;
+		light_manager->light_intensity_array[i] = light_manager->lights[i].intensity;
+	return light_manager->light_intensity_array;
 }
 
 static void SetShaderLights(LightManager *light_manager, Shader shader)
