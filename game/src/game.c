@@ -8,7 +8,10 @@
 #include "camera.c"
 #include "shader_loader.c"
 #include "light/light_manager.c"
+#include "sdf/sdf.c"
 #include "background.c"
+
+#define DRAW_GAME false
 
 #define BALL_COUNT 5
 #define BALL_SIZE 5
@@ -30,6 +33,7 @@ typedef struct
 	ShaderLoader shader_loader;
 	LightManager light_manager;
 	Background background;
+	SDFObject sdf;
 
 } Game;
 
@@ -47,6 +51,10 @@ static void InitGame(Game *game)
 	InitSoundManager(&game->sound_manager);
 	InitShaderLoader(&game->shader_loader);
 	InitLightManager(&game->light_manager);
+
+	//
+	InitSDF(&game->sdf);
+	//
 
 	game->background = (Background){
 			.size = (Vector2){GetScreenWidth(), GetScreenHeight()},
@@ -108,30 +116,45 @@ static void UpdateGame(Game *game, float delta)
 static void DrawGame(Game *game, float delta)
 {
 	BeginBlendMode(BLEND_ALPHA);
-	DrawBackground(&game->background);
-	BeginMode2D(GetModifiedCamera(&game->camera_manager));
-
-	// DRAW PLAYER
-	Player *player = &(game->player);
-	DrawPlayer(player);
-
-	// DRAW BOARD
-	Board *board = &(game->board);
-	DrawBoard(board);
-
-	// DRAW BALL
-	Ball *ball = game->balls;
-	for (int i = 0; i < BALL_COUNT; i++)
+	if (DRAW_GAME)
 	{
-		DrawBall(ball);
+		DrawBackground(&game->background);
+		BeginMode2D(GetModifiedCamera(&game->camera_manager));
 
-		ball++;
+		{
+			// DRAW PLAYER
+			Player *player = &(game->player);
+			DrawPlayer(player);
+
+			// DRAW BOARD
+			Board *board = &(game->board);
+			DrawBoard(board);
+
+			// DRAW BALL
+			Ball *ball = game->balls;
+			for (int i = 0; i < BALL_COUNT; i++)
+			{
+				DrawBall(ball);
+
+				ball++;
+			}
+
+			// DRAW PARTICLES
+			DrawParticleManager(&game->particle_manager);
+			EndMode2D();
+		}
+		EndBlendMode();
 	}
 
-	// DRAW PARTICLES
-	DrawParticleManager(&game->particle_manager);
-	EndMode2D();
-	EndBlendMode();
+	// BeginBlendMode(BLEND);
+	{
+		BeginMode2D(GetModifiedCamera(&game->camera_manager));
+		{
+			DrawSDF(&game->sdf);
+		}
+		EndMode2D();
+	}
+	// EndBlendMode();
 }
 
 static void HandleCollisions(Game *game, float delta)

@@ -19,6 +19,7 @@
 		"assert.h": "c",
 		"stdlib.h": "c",
 		"math.h": "c",
-		"limits": "c"
+		"limits": "c",
+		"raymath.h": "c"
 	}
 }

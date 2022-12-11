@@ -6,6 +6,8 @@
 #ifndef __SHADER_LOADER
 #define __SHADER_LOADER
 
+static const char *PATH_TO_TEXTURE_64_WHITE = "game/resources/textures/64x64_white.png";
+
 typedef struct ShaderLoader
 {
 	const char *fragment_filename;
