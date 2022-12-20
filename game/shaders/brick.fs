@@ -1,29 +1,5 @@
 #version 330
 
-// Input vertex attributes (from vertex shader)
-in vec2 fragTexCoord;
-in vec4 fragColor;
-
-// Input uniform values
-uniform sampler2D texture0;
-uniform vec4 colDiffuse;
-
-uniform vec4 color_hint;
-uniform vec2 body_size;
-uniform vec2 object_top_left;
-
-uniform float border_thickness;
-uniform vec4 border_color;
-uniform vec2 gi_direction;
-
-// Light uniforms
-uniform int light_count;
-uniform vec2 light_pos[16];
-uniform float light_intensity[16];
-
-// Output fragment color
-out vec4 finalColor;
-
 float dot(vec2 a, vec2 b)
 {
     return a.x * b.x + a.y * b.y;
@@ -137,6 +113,38 @@ float round_corner(vec2 frag, vec2 texture_size, float corner_dist)
     return 1.0;
 }
 
+
+// Input vertex attributes (from vertex shader)
+// const vec4 fortify_color = {0.4, .03, 0.9, 1.0};
+in vec2 fragTexCoord;
+in vec4 fragColor;
+
+// Input uniform values
+uniform sampler2D texture0;
+uniform vec4 colDiffuse;
+
+uniform vec4 color_hint;
+uniform vec2 body_size;
+uniform vec2 object_top_left;
+
+uniform float border_thickness;
+uniform vec4 border_color;
+uniform vec2 gi_direction;
+
+// gameplay value
+uniform int left_fortify;
+uniform int right_fortify;
+uniform int top_fortify;
+uniform int bottom_fortify;
+
+// Light uniforms
+uniform int light_count;
+uniform vec2 light_pos[16];
+uniform float light_intensity[16];
+
+// Output fragment color
+out vec4 finalColor;
+
 void main()
 {
     vec4 color = texture(texture0, fragTexCoord);
@@ -159,6 +167,55 @@ void main()
     }
 
     color.rgb += min(0.2, total_cont / 1.0);
+
+    // if left fortify > 0
+    // override colors with fortification
+
+    // color.b += float(left_fortify);
+    // if (left_fortify > 0)
+    // {
+    //     color.b += float(left_fortify);
+        // color.rgb += smoothstep(5.0*uv.x, 5.0*uv.x - 0.1, (1.0 - abs(y - 0.5) * 2.0));
+    // }
+    
+    {
+        vec3 fortify_color = vec3(0.4, 0.3, 0.9);
+        if (left_fortify > 0)
+        {
+            float k = - 5.0 * uv.x + (1.0 - abs(uv.y - 0.5) * 2.0);
+            if (k > 0)
+                color.rgb = fortify_color; 
+        }
+
+        if (right_fortify > 0)
+        {
+            float k = - 5.0 * (1.0 - uv.x) + (1.0 - abs(uv.y - 0.5) * 2.0);
+            if (k > 0)
+                color.rgb = fortify_color; 
+        }
+
+        if (top_fortify > 0)
+        {
+            float k = - 3.0 * uv.y + (1.0 - abs(uv.x - 0.5) * 2.0);
+            if (k > 0)
+                color.rgb = fortify_color; 
+        }
+
+        if (bottom_fortify > 0)
+        {
+            float k = - 3.0 * (1.0 - uv.y) + (1.0 - abs(uv.x - 0.5) * 2.0);
+            if (k > 0)
+                color.rgb = fortify_color; 
+        }
+    }
+
+
+    // y=0 -> 0.0> uv.x
+    // y=0.5 -> 0.2> uv.x
+    // y=1.0 -> 0.0> uv.x
+
+    // 1 - abs(y - 0.5) * 2 > uv.x * 5
+
     // color.r = pow(color.r, 1.0 - total_cont);
     // color.g = pow(color.g, 1.0 - total_cont);
     // color.b = pow(color.b, 1.0 - total_cont);

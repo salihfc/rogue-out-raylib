@@ -14,6 +14,11 @@ typedef struct
 
     ShaderLoader shader_loader;
     Texture2D texture;
+
+    int left_fortify;
+    int right_fortify;
+    int top_fortify;
+    int bottom_fortify;
 } Brick;
 
 static Rectangle GetBrickRect(Brick *brick)
@@ -46,19 +51,31 @@ static Color GetBrickColorFromHp(int hp)
 
 static void InitBrick(Brick *brick)
 {
+    brick->left_fortify = 1;
+    brick->top_fortify = 1;
+    brick->right_fortify = 1;
+    brick->bottom_fortify = 1;
+
     brick->shader_loader = (ShaderLoader){
         .use_frag = true,
         .fragment_filename = "game/shaders/brick.fs"};
 
     brick->texture = LoadTexture("game/resources/textures/64x64_white.png");
 
+    // BASE
     InitShaderLoader(&brick->shader_loader);
     SetShaderVec4(brick->shader_loader.shader, "color_hint", ColorNormalize(GetBrickColorFromHp(brick->remainingHp)));
     SetShaderVec4(brick->shader_loader.shader, "border_color", ColorNormalize(BRICK_BORDER_COLOR));
     SetShaderFloat((brick->shader_loader.shader), "border_thickness", BRICK_BORDER_SIZE);
     SetShaderVec2(brick->shader_loader.shader, "body_size", (Vector2){GetBrickRect(brick).width, GetBrickRect(brick).height});
     SetShaderVec2(brick->shader_loader.shader, "object_top_left", brick->position);
-    // SetShaderVec2(brick->shader_loader.shader, "gi_direction", (Vector2){0.0, -1.0});
+    //
+    // Fortify
+    SetShaderInt(brick->shader_loader.shader, "left_fortify", brick->left_fortify);
+    SetShaderInt(brick->shader_loader.shader, "top_fortify", brick->top_fortify);
+    SetShaderInt(brick->shader_loader.shader, "bottom_fortify", brick->bottom_fortify);
+    SetShaderInt(brick->shader_loader.shader, "right_fortify", brick->right_fortify);
+    //
 }
 
 static void DealDamageToBrick(Brick *brick, int damage)
