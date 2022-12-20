@@ -93,6 +93,11 @@ float round_corner(vec2 frag, vec2 texture_size, float corner_dist)
     return 1.0;
 }
 
+// [0, 1] -> [min, max]
+float lerp(float value, float mn, float mx)
+{
+    return mn + (mx - mn) * value;
+}
 
 // Input vertex attributes (from vertex shader)
 in vec2 fragTexCoord;
@@ -106,9 +111,18 @@ uniform vec4 color_hint;
 uniform vec2 body_size;
 
 // uniform vec2 gi_direction;
+// RECTS
+uniform vec4 rects[128];
+uniform int rect_count;
+// CIRCLES
+uniform vec3 circles[128];
+uniform int circle_count;
 
 // Output fragment color
 out vec4 finalColor;
+//
+const float MIN_ADD = 0.0;
+const float MAX_ADD = 0.2;
 
 float sdf_circle(vec2 uv, vec2 position, float radius)
 {
@@ -133,11 +147,16 @@ void main()
     color = vec4(vec3(0.0), 1.0);
     float d = 1e9;
 
-    d = min(d, sdf_box(frag_coord, vec2(400.0, 400.0), vec2(40.0, 80.0)));
-    d = min(d, sdf_circle(frag_coord, vec2(400.0, 400.0), 60.0));
+    // d = min(d, sdf_box(frag_coord, vec2(400.0, 400.0), vec2(40.0, 80.0)));
+    // d = min(d, sdf_circle(frag_coord, vec2(400.0, 400.0), 60.0));
 
+    for (int i = 0; i < rect_count; i++)
+        d = min(d, sdf_box(frag_coord, rects[i].xy, rects[i].zw));
 
-    color.r = 1.0 - max(0.0, d);;
+    for (int i = 0; i < circle_count; i++)
+        d = min(d, sdf_circle(frag_coord, circles[i].xy, circles[i].z));
+
+    color.rgb = vec3(lerp(1.0 - max(0.0, d), MIN_ADD, MAX_ADD));
     finalColor = color;
 }
 

@@ -32,6 +32,11 @@ static void SetShaderVec4(Shader shader, const char *param_name, Vector4 vec4)
 	SetShaderParam(shader, param_name, (float[4]){vec4.x, vec4.y, vec4.z, vec4.w}, SHADER_UNIFORM_VEC4);
 }
 
+static void SetShaderVec3(Shader shader, const char *param_name, Vector3 vec3)
+{
+	SetShaderParam(shader, param_name, (float[3]){vec3.x, vec3.y, vec3.z}, SHADER_UNIFORM_VEC3);
+}
+
 static void SetShaderVec2(Shader shader, const char *param_name, Vector2 vec2)
 {
 	SetShaderParam(shader, param_name, (float[2]){vec2.x, vec2.y}, SHADER_UNIFORM_VEC2);
@@ -51,6 +56,18 @@ static void SetShaderVec2Array(Shader shader, const char *param_name, float *flo
 {
 	int loc = GetShaderLocation(shader, param_name);
 	SetShaderValueV(shader, loc, floatArray, SHADER_UNIFORM_VEC2, size);
+}
+
+static void SetShaderVec3Array(Shader shader, const char *param_name, float *floatArray, int size)
+{
+	int loc = GetShaderLocation(shader, param_name);
+	SetShaderValueV(shader, loc, floatArray, SHADER_UNIFORM_VEC3, size);
+}
+
+static void SetShaderVec4Array(Shader shader, const char *param_name, float *floatArray, int size)
+{
+	int loc = GetShaderLocation(shader, param_name);
+	SetShaderValueV(shader, loc, floatArray, SHADER_UNIFORM_VEC4, size);
 }
 
 static void SetShaderFloatArray(Shader shader, const char *param_name, float *floatArray, int size)

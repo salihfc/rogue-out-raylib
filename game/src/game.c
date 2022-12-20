@@ -11,7 +11,8 @@
 #include "sdf/sdf.c"
 #include "background.c"
 
-#define DRAW_GAME false
+#define DRAW_GAME true
+#define DRAW_SDF true
 
 #define BALL_COUNT 5
 #define BALL_SIZE 5
@@ -42,6 +43,8 @@ static void HandleCollisions(Game *game, float delta);
 
 static void InitGame(Game *game)
 {
+	SetTraceLogLevel(LOG_ERROR);
+
 	game->frame = 0;
 	InitPlayer(&game->player);
 	ResetPlayerPosition(&(game->player));
@@ -115,7 +118,8 @@ static void UpdateGame(Game *game, float delta)
 
 static void DrawGame(Game *game, float delta)
 {
-	BeginBlendMode(BLEND_ALPHA);
+	// BeginBlendMode(BLEND_ALPHA);
+	BeginBlendMode(BLEND_ADDITIVE);
 	if (DRAW_GAME)
 	{
 		DrawBackground(&game->background);
@@ -143,18 +147,22 @@ static void DrawGame(Game *game, float delta)
 			DrawParticleManager(&game->particle_manager);
 			EndMode2D();
 		}
-		EndBlendMode();
+		// EndBlendMode();
 	}
 
-	// BeginBlendMode(BLEND);
+	if (DRAW_SDF)
 	{
-		BeginMode2D(GetModifiedCamera(&game->camera_manager));
+		// BeginBlendMode(BLEND_ADDITIVE);
 		{
-			DrawSDF(&game->sdf);
+			BeginMode2D(GetModifiedCamera(&game->camera_manager));
+			{
+				DrawSDF(&game->sdf);
+			}
+			EndMode2D();
 		}
-		EndMode2D();
+		// EndBlendMode();
 	}
-	// EndBlendMode();
+	EndBlendMode();
 }
 
 static void HandleCollisions(Game *game, float delta)
