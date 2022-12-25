@@ -257,6 +257,7 @@ static void HandleCollisionBall(Game *game, Ball *ball, float delta)
 		if (ball_collided_with_brick)
 		{
 			Vector2 direction = VectorDirectionTo(GetBrickCenter(brick), ball->position);
+			Vector2 collision_normal = direction;
 
 			CameraAddTrauma(&game->camera_manager, 0.05);
 
@@ -286,7 +287,7 @@ static void HandleCollisionBall(Game *game, Ball *ball, float delta)
 
 			ball->position = VectorSum(ball->position, VectorScaled(ball->velocity, delta));
 
-			DealDamageToBrick(brick, 1);
+			DealDamageToBrick(brick, 1, collision_normal);
 
 			if (IsBrickDestroyed(brick))
 			{

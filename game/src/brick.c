@@ -51,10 +51,10 @@ static Color GetBrickColorFromHp(int hp)
 
 static void InitBrick(Brick *brick)
 {
-    brick->left_fortify = 1;
-    brick->top_fortify = 1;
-    brick->right_fortify = 1;
-    brick->bottom_fortify = 1;
+    brick->left_fortify = 0;
+    brick->top_fortify = 0;
+    brick->right_fortify = 0;
+    brick->bottom_fortify = 0;
 
     brick->shader_loader = (ShaderLoader){
         .use_frag = true,
@@ -78,8 +78,32 @@ static void InitBrick(Brick *brick)
     //
 }
 
-static void DealDamageToBrick(Brick *brick, int damage)
+static void DealDamageToBrick(Brick *brick, int damage, Vector2 normal)
 {
+    Direction incoming_dir = get_direction(normal);
+    // printf("direction: %s\n", dir_to_string(incoming_dir));
+    // TRACELOG(LOG_FATAL, TextFormat());
+
+    switch (incoming_dir)
+    {
+    case UP:
+        if (brick->top_fortify)
+            return;
+        break;
+    case DOWN:
+        if (brick->bottom_fortify)
+            return;
+        break;
+    case LEFT:
+        if (brick->left_fortify)
+            return;
+        break;
+    case RIGHT:
+        if (brick->right_fortify)
+            return;
+        break;
+    }
+
     brick->remainingHp -= damage;
     SetShaderVec4(brick->shader_loader.shader, "color_hint", ColorNormalize(GetBrickColorFromHp(brick->remainingHp)));
 }
