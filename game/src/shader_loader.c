@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "rlgl.h"
+#include "defines.c"
 #include <assert.h>
 
 #define GLSL_VERSION 330
@@ -23,9 +24,17 @@ typedef struct ShaderLoader
 
 static void SetShaderParam(Shader shader, const char *param_name, void *param_pointer, int param_type)
 {
+#if SHADERS_ENABLED
 	int loc = GetShaderLocation(shader, param_name);
-	assert(loc != -1); // -1 means not found
+	if (loc == -1)
+	{
+		// TRACELOG(LOG_FATAL, TextFormat("param_name: [%s], type: [%d]", param_name, param_type));
+		printf("param_name: [%s], type: [%d]", param_name, param_type);
+		fflush(stdout);
+	}
+	// assert(loc != -1); // -1 means not found
 	SetShaderValue(shader, loc, param_pointer, param_type);
+#endif
 }
 
 static void SetShaderVec4(Shader shader, const char *param_name, Vector4 vec4)

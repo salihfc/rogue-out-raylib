@@ -25,13 +25,13 @@ static void InitBall(Ball *ball, Vector2 position, Vector2 velocity, float radiu
     ball->particle_emitter =
         (ParticleEmitter){
             .base_color = YELLOW,
-            .alpha = (Range){.min = 0.4, .max = 1.0},
-            .lifetime = (Range){.min = 0.5, .max = 1},
-            .size = (Range){.min = 2, .max = 4},
-            .speed = (Range){.min = 0, .max = 0},
+            .alpha = (MyRange){.min = 0.4, .max = 1.0},
+            .lifetime = (MyRange){.min = 0.5, .max = 1},
+            .size = (MyRange){.min = 2, .max = 4},
+            .speed = (MyRange){.min = 0, .max = 0},
 
-            .spread_angle = (Range){0, 2 * PI},
-            .spread_distribution = UNIFORM,
+            .spread_angle = (MyRange){0, 2 * PI},
+            .spread_distribution = UNIFORM_DISTRIBUTION,
             .offset_from_parent = (Vector2){0, 0},
 
             .emission_per_second = 100.0,

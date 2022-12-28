@@ -2,3 +2,7 @@ raylib-master
 _build
 _bin
 .vs
+*.wasm
+game.html
+web_compile.sh
+game.js

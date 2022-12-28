@@ -40,13 +40,13 @@ static void InitPlayer(Player *player)
     player->left_emitter =
         (ParticleEmitter){
             .base_color = DARKGREEN,
-            .alpha = (Range){.min = 0.4, .max = 1.0},
-            .lifetime = (Range){.min = 1.0, .max = 1.5},
-            .size = (Range){.min = 4, .max = 6},
-            .speed = (Range){.min = 20, .max = 30},
+            .alpha = (MyRange){.min = 0.4, .max = 1.0},
+            .lifetime = (MyRange){.min = 1.0, .max = 1.5},
+            .size = (MyRange){.min = 4, .max = 6},
+            .speed = (MyRange){.min = 20, .max = 30},
 
-            .spread_angle = (Range){PI, 3 * PI / 2},
-            .spread_distribution = UNIFORM,
+            .spread_angle = (MyRange){PI, 3 * PI / 2},
+            .spread_distribution = UNIFORM_DISTRIBUTION,
             .offset_from_parent = (Vector2){0, player->body.size.y},
 
             .emission_per_second = 10.0,
@@ -59,13 +59,13 @@ static void InitPlayer(Player *player)
     player->right_emitter =
         (ParticleEmitter){
             .base_color = DARKGREEN,
-            .alpha = (Range){.min = 0.4, .max = 1.0},
-            .lifetime = (Range){.min = 1.0, .max = 1.5},
-            .size = (Range){.min = 4, .max = 6},
-            .speed = (Range){.min = 20, .max = 30},
+            .alpha = (MyRange){.min = 0.4, .max = 1.0},
+            .lifetime = (MyRange){.min = 1.0, .max = 1.5},
+            .size = (MyRange){.min = 4, .max = 6},
+            .speed = (MyRange){.min = 20, .max = 30},
 
-            .spread_angle = (Range){-PI / 2.0, 0},
-            .spread_distribution = UNIFORM,
+            .spread_angle = (MyRange){-PI / 2.0, 0},
+            .spread_distribution = UNIFORM_DISTRIBUTION,
             .offset_from_parent = (Vector2){player->body.size.x, player->body.size.y},
 
             .emission_per_second = 10.0,
@@ -125,9 +125,13 @@ static void DrawPlayer(Player *player)
     DrawParticleEmitter(&player->left_emitter);
     DrawParticleEmitter(&player->right_emitter);
 
+#if SHADERS_ENABLED
     InitShaderMode(&player->shader_loader);
     DrawTextureQuad(player->texture, Vector2One(), Vector2Zero(), GetPlayerRect(player), player->tint);
     FinishShaderMode(&player->shader_loader);
+#else
+    DrawTextureQuad(player->texture, Vector2One(), Vector2Zero(), GetPlayerRect(player), player->tint);
+#endif
 }
 
 #endif

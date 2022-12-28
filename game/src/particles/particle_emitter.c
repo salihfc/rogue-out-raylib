@@ -1,5 +1,5 @@
 #include "raylib.h"
-#include "../range.c"
+#include "../my_range.c"
 #include "../utils/geo_utils.c"
 #include "particle_manager.c"
 
@@ -12,14 +12,14 @@ typedef struct ParticleEmitter
 	float particle_per_emission;
 	float emit_frequency;
 
-	Range lifetime;
-	Range speed;
-	Range size;
-	Range alpha;
+	MyRange lifetime;
+	MyRange speed;
+	MyRange size;
+	MyRange alpha;
 
 	Color base_color;
 
-	Range spread_angle;
+	MyRange spread_angle;
 	Distribution spread_distribution;
 
 	ParticleManager particle_manager;
@@ -46,11 +46,11 @@ static void _EmitterEmit(ParticleEmitter *emitter, Vector2 parent_position)
 		AddParticle(&emitter->particle_manager,
 								(Particle){
 										.type = emitter->particle_type,
-										.lifetime = GetRandomInRange(emitter->lifetime, UNIFORM),
-										.base_size = GetRandomInRange(emitter->size, UNIFORM),
-										.color = Fade(emitter->base_color, GetRandomInRange(emitter->alpha, UNIFORM)),
+										.lifetime = GetRandomInRange(emitter->lifetime, UNIFORM_DISTRIBUTION),
+										.base_size = GetRandomInRange(emitter->size, UNIFORM_DISTRIBUTION),
+										.color = Fade(emitter->base_color, GetRandomInRange(emitter->alpha, UNIFORM_DISTRIBUTION)),
 
-										.velocity = VectorScaled(AngleToVector(GetRandomInRange(emitter->spread_angle, emitter->spread_distribution)), GetRandomInRange(emitter->speed, UNIFORM)),
+										.velocity = VectorScaled(AngleToVector(GetRandomInRange(emitter->spread_angle, emitter->spread_distribution)), GetRandomInRange(emitter->speed, UNIFORM_DISTRIBUTION)),
 										.position = VectorSum(parent_position, emitter->offset_from_parent),
 
 										.damping = 0.7,

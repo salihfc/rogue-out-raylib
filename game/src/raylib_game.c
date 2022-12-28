@@ -45,6 +45,7 @@ static const int screenHeight = 900;
 static void Input(Game *, Camera2D *, float);	 // Update and draw one frame
 static void Update(Game *, Camera2D *, float); // Update and draw one frame
 static void Draw(Game *, Camera2D *, float);	 // Update and draw one frame
+static void UpdateDrawFrame();
 
 // helpers
 

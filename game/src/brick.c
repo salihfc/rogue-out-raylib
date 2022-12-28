@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "raylib.h"
 #include "utils/geo_utils.c"
 #include "shader_loader.c"
@@ -102,6 +103,8 @@ static void DealDamageToBrick(Brick *brick, int damage, Vector2 normal)
         if (brick->right_fortify)
             return;
         break;
+    default:
+        break;
     }
 
     brick->remainingHp -= damage;
@@ -118,12 +121,23 @@ static void DrawBrick(Brick *brick)
     if (IsBrickDestroyed(brick))
         return;
 
-    InitShaderMode(&brick->shader_loader);
+#if SHADERS_ENABLED
     {
-        Rectangle rect = GetBrickRect(brick);
-        // DrawRectangleRec(rect, color);
-        Color color = GetBrickColorFromHp(brick->remainingHp);
-        DrawTextureQuad(brick->texture, Vector2One(), Vector2Zero(), rect, color);
+        InitShaderMode(&brick->shader_loader);
+        {
+            Rectangle rect = GetBrickRect(brick);
+            // DrawRectangleRec(rect, color);
+            Color color = GetBrickColorFromHp(brick->remainingHp);
+            DrawTextureQuad(brick->texture, Vector2One(), Vector2Zero(), rect, color);
+        }
+        FinishShaderMode(&brick->shader_loader);
     }
-    FinishShaderMode(&brick->shader_loader);
+#else
+    Rectangle rect = GetBrickRect(brick);
+    Color color = GetBrickColorFromHp(brick->remainingHp);
+    DrawRectangleRec(rect, color);
+    // DrawTextureQuad(brick->texture, Vector2One(), Vector2Zero(), rect, color);
+    // TRACELOG(LOG_INFO, TextFormat("Draw Rect with (%d, %d, %d, %d)", color.r, color.g, color.b, color.a));
+    // printf("Draw Rect with (%d, %d, %d, %d)", color.r, color.g, color.b, color.a);
+#endif
 }

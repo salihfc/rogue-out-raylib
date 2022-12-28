@@ -26,6 +26,8 @@ static inline const char *dir_to_string(Direction dir)
 		return "LEFT";
 	case RIGHT:
 		return "RIGHT";
+	default:
+		return "[!INVALID DIRECTION]";
 	}
 	return "[!INVALID DIRECTION]";
 }
@@ -51,6 +53,8 @@ static Vector2 get_dir_vector(Direction dir)
 		return right();
 	case DOWN:
 		return down();
+	default:
+		break;
 	}
 
 	return zero();

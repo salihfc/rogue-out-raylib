@@ -20,6 +20,7 @@
 		"stdlib.h": "c",
 		"math.h": "c",
 		"limits": "c",
-		"raymath.h": "c"
+		"raymath.h": "c",
+		"rlgl.h": "c"
 	}
 }
