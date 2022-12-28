@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "utils/vector2.c"
 
 #define CAMERA_SHAKE false
 #define MAX_SHAKE_ANGLE 5.0

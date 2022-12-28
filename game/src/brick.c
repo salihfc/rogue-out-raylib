@@ -77,7 +77,7 @@ static void InitBrick(Brick *brick)
     SetShaderInt(brick->shader_loader.shader, "right_fortify", brick->right_fortify);
     //
 }
-
+// ./premake5 gmake2 --graphics=opengl21 --os=linux --cc=emcc
 static void DealDamageToBrick(Brick *brick, int damage, Vector2 normal)
 {
     Direction incoming_dir = get_direction(normal);

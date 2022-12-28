@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "utils/geo_utils.c"
 #include "light/light.c"
+#include "particles/particle_emitter.c"
 
 static const float DEFAULT_BALL_LIGHT_INTENSITY = 1500.0;
 

@@ -2,6 +2,9 @@
 #include "utils/utils.c"
 #include "assert.h"
 
+#ifndef __RANGE
+#define __RANGE
+
 typedef struct Range
 {
 	float min;
@@ -39,3 +42,5 @@ static float GetRandomInRange(Range range, Distribution dist)
 	assert(0);
 	return 0;
 }
+
+#endif

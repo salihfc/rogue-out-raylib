@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "rlgl.h"
+#include <assert.h>
 
 #define GLSL_VERSION 330
 

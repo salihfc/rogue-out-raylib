@@ -3,6 +3,9 @@
 #include "../utils/geo_utils.c"
 #include "particle_manager.c"
 
+#ifndef __PARTICLE_EMITTER
+#define __PARTICLE_EMITTER
+
 typedef struct ParticleEmitter
 {
 	float emission_per_second;
@@ -80,3 +83,5 @@ static void DrawParticleEmitter(ParticleEmitter *emitter)
 {
 	DrawParticleManager(&emitter->particle_manager);
 }
+
+#endif

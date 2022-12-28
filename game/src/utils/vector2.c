@@ -1,4 +1,6 @@
 #include <raylib.h>
+#include <raymath.h>
+#include <math.h>
 
 #ifndef _VECTOR2
 #define _VECTOR2
