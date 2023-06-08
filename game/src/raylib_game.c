@@ -48,6 +48,7 @@ static void Draw(Game *, Camera2D *, float);	 // Update and draw one frame
 static void UpdateDrawFrame();
 
 // helpers
+bool restart_game = false;
 
 // Setup camera
 Camera2D camera = {0};
@@ -92,6 +93,12 @@ int main(void)
 	while (!WindowShouldClose()) // Detect window close button or ESC key
 	{
 		float delta = GetFrameTime();
+		if (restart_game)
+		{
+			InitGame(&game);
+			restart_game = false;
+		}
+
 		Input(&game, &camera, delta);
 		Update(&game, &camera, delta);
 		Draw(&game, &camera, delta);
@@ -142,6 +149,16 @@ static void Input(Game *game, Camera2D *camera, float delta)
 		Vector2 mouse = GetMousePosition();
 		printf("%d %d\n", (int)mouse.x, (int)mouse.y);
 		printf("%s %s\n", IntToConstChar((int)mouse.x), IntToConstChar((int)mouse.y));
+	}
+
+	else if (IsKeyPressed(KEY_C))
+	{
+		TakeScreenshot("screenshot.png");
+	}
+
+	else if (IsKeyPressed(KEY_R))
+	{
+		restart_game = true;
 	}
 }
 
