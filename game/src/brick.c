@@ -126,7 +126,6 @@ static void DrawBrick(Brick *brick)
         InitShaderMode(&brick->shader_loader);
         {
             Rectangle rect = GetBrickRect(brick);
-            // DrawRectangleRec(rect, color);
             Color color = GetBrickColorFromHp(brick->remainingHp);
             DrawTextureQuad(brick->texture, Vector2One(), Vector2Zero(), rect, color);
         }
@@ -136,8 +135,5 @@ static void DrawBrick(Brick *brick)
     Rectangle rect = GetBrickRect(brick);
     Color color = GetBrickColorFromHp(brick->remainingHp);
     DrawRectangleRec(rect, color);
-    // DrawTextureQuad(brick->texture, Vector2One(), Vector2Zero(), rect, color);
-    // TRACELOG(LOG_INFO, TextFormat("Draw Rect with (%d, %d, %d, %d)", color.r, color.g, color.b, color.a));
-    // printf("Draw Rect with (%d, %d, %d, %d)", color.r, color.g, color.b, color.a);
 #endif
 }

@@ -116,6 +116,8 @@ float round_corner(vec2 frag, vec2 texture_size, float corner_dist)
 
 // Input vertex attributes (from vertex shader)
 // const vec4 fortify_color = {0.4, .03, 0.9, 1.0};
+const bool fortify_enabled = false;
+
 in vec2 fragTexCoord;
 in vec4 fragColor;
 
@@ -177,7 +179,7 @@ void main()
     //     color.b += float(left_fortify);
         // color.rgb += smoothstep(5.0*uv.x, 5.0*uv.x - 0.1, (1.0 - abs(y - 0.5) * 2.0));
     // }
-    
+    if(fortify_enabled)
     {
         vec3 fortify_color = vec3(0.4, 0.3, 0.9);
         if (left_fortify > 0)

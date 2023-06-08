@@ -2,6 +2,7 @@
 #include "rlgl.h"
 #include "defines.c"
 #include <assert.h>
+#include <stdio.h>
 
 #define GLSL_VERSION 330
 
@@ -29,7 +30,7 @@ static void SetShaderParam(Shader shader, const char *param_name, void *param_po
 	if (loc == -1)
 	{
 		// TRACELOG(LOG_FATAL, TextFormat("param_name: [%s], type: [%d]", param_name, param_type));
-		printf("param_name: [%s], type: [%d]", param_name, param_type);
+		// printf("param_name: [%s], type: [%d]", param_name, param_type);
 		fflush(stdout);
 	}
 	// assert(loc != -1); // -1 means not found

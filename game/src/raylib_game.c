@@ -82,7 +82,8 @@ int main(void)
 	InitGame(&game);
 
 #if defined(PLATFORM_WEB)
-	emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
+	// emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
+	emscripten_set_main_loop(UpdateDrawFrame, 0, 1); // 0 means that the loop will run as fast as the browser wants to render it
 #else
 	SetTargetFPS(60); // Set our game to run at 60 frames-per-second
 	//--------------------------------------------------------------------------------------
